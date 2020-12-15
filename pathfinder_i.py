@@ -217,36 +217,26 @@ class Fp_class():
             # combinations = combinations[:50]
 
 
-            # if max_pos == 13:
-                # print (len(combinations), combinations)
-
-
-
-            # print ("a", candidates)
-
             # try: rnasubopt for candidate generation
+            # cmd = f'printf "{sequence}\n{C_str}\n" | RNAsubopt -C −−enforceConstraint -e 2'
+            # result = subprocess.check_output(cmd, shell=True, encoding="utf8")
+            # subopt_list = result.split("\n")
+            # subopt_structure = subopt_list[1].split()[0]
+            # subopt_ptable = RNA.ptable_from_string(subopt_structure)
+            # candidates = []
+            # for i in range(1, len(current_ptable)):
+            #     if current_ptable[i] == subopt_ptable[i]: continue
+            #     if subopt_ptable[i] == 0: continue
+            #     j = subopt_ptable[i]
+            #     if i>j: continue # closing bracket
 
-            cmd = f'printf "{sequence}\n{C_str}\n" | RNAsubopt -C −−enforceConstraint -e 2'
-            result = subprocess.check_output(cmd, shell=True, encoding="utf8")
-            subopt_list = result.split("\n")
-            subopt_structure = subopt_list[1].split()[0]
-            subopt_ptable = RNA.ptable_from_string(subopt_structure)
-            candidates = []
-            for i in range(1, len(current_ptable)):
-                if current_ptable[i] == subopt_ptable[i]: continue
-                if subopt_ptable[i] == 0: continue
-                j = subopt_ptable[i]
-                if i>j: continue # closing bracket
+            #     if current_loop[i] != current_loop[j]: continue
+            #     if (i,j) in moves: continue
+            #     if (-i,-j) in moves: continue
+            #     candidates.append((i, j))
 
-                if current_loop[i] != current_loop[j]: continue
-                if (i,j) in moves: continue
-                if (-i,-j) in moves: continue
-
-                candidates.append((i, j))
-
-            combinations = [[moves_to_en([(x[0],x[1])]),[(x[0],x[1])]] for x in candidates]
-            all_candidates = []
-
+            # combinations = [[moves_to_en([(x[0],x[1])]),[(x[0],x[1])]] for x in candidates]
+            # all_candidates = []
 
 
             iteration = 0
@@ -640,9 +630,9 @@ if __name__ == '__main__':
     s2       = "...........(((((((((..............)))))))))..."
 
     # rna2dfold example
-    # sequence = "GGGCGCGGUUCGCCCUCCGCUAAAUGCGGAAGAUAAAUUGUGUCU"
-    # s1 = "(((((.....)))))(((((.....)))))(((((.....)))))"
-    # s2 = "((((((((((.....(((((.....))))).....))))))))))"
+    sequence = "GGGCGCGGUUCGCCCUCCGCUAAAUGCGGAAGAUAAAUUGUGUCU"
+    s1 = "(((((.....)))))(((((.....)))))(((((.....)))))"
+    s2 = "((((((((((.....(((((.....))))).....))))))))))"
 
     # EApath supplement
 
