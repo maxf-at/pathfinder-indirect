@@ -216,7 +216,6 @@ class Fp_class():
             # combinations.sort(key=lambda x: x[0])
             # combinations = combinations[:50]
 
-
             # try: rnasubopt for candidate generation
             # cmd = f'printf "{sequence}\n{C_str}\n" | RNAsubopt -C −−enforceConstraint -e 2'
             # result = subprocess.check_output(cmd, shell=True, encoding="utf8")
@@ -237,7 +236,6 @@ class Fp_class():
 
             # combinations = [[moves_to_en([(x[0],x[1])]),[(x[0],x[1])]] for x in candidates]
             # all_candidates = []
-
 
             iteration = 0
             while iteration < 10:
@@ -626,8 +624,8 @@ if __name__ == '__main__':
 
     # Tabu paper example
     sequence = "CGCGACGGCUACGCGACGGCAAUGCCGUUGCGAAGCCGUCGCGAUC"
-    s1       = "(((((((((..............))))))))).............."
-    s2       = "...........(((((((((..............)))))))))..."
+    s1 = "(((((((((..............))))))))).............."
+    s2 = "...........(((((((((..............)))))))))..."
 
     # rna2dfold example
     sequence = "GGGCGCGGUUCGCCCUCCGCUAAAUGCGGAAGAUAAAUUGUGUCU"
@@ -707,7 +705,6 @@ if __name__ == '__main__':
     # indirect_iterations = 2
     indirect_iterations = 2
 
-
     paths = find_path(sequence, s1, s2, indirect_iterations=indirect_iterations, add_moves=add_moves,
                       search_width=search_width, Debug=Debug, Verbose=Verbose)
 
@@ -719,3 +716,41 @@ if __name__ == '__main__':
 
     print(pathfinder_result.max_en)
     # print (pathfinder.pathfinder(sequence, s2, s1, section=section, search_width=search_width, verbose=Verbose).sE)
+
+
+def detect_local_minimum(fc, structure):
+    # perform gradient walk from sample to determine direct local minimum
+    pt = RNA.IntVector(RNA.ptable(structure))
+    fc.path(pt, 0, RNA.PATH_DEFAULT | RNA.PATH_NO_TRANSITION_OUTPUT)
+    return RNA.db_from_ptable(list(pt))
+
+
+def get_neighbors(fc, db=None, pt=None):
+    """
+    """
+    if pt is None:
+        pt = RNA.ptable(db)
+    else:
+        assert db == None
+    nbrs = []
+    for move in fc.neighbors(pt):
+        npt = list(pt)
+        if move.is_removal():
+            npt[-move.pos_3] = 0
+            npt[-move.pos_5] = 0
+            ndb = RNA.db_from_ptable(npt)
+        elif move.is_insertion():
+            npt[move.pos_3] = move.pos_5
+            npt[move.pos_5] = move.pos_3
+        else:
+            rlog.warning(f"Are you using shift moves?")
+            rlog.warning(f" shift = {move.is_shift()}")
+            rlog.warning(f" pos3 = {move.pos_3}")
+            rlog.warning(f" pos5 = {move.pos_5}")
+            raise NotImplementedError('Are you using shift moves?')
+        dG = fc.eval_move_pt(pt, move.pos_5, move.pos_3)
+        if db:
+            nbrs.append([RNA.db_from_ptable(npt), dG])
+        else:
+            nbrs.append([npt, dG])
+        return nbrs
