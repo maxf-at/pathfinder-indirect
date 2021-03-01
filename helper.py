@@ -104,7 +104,7 @@ def generate_structures(length=150):
     return sequence, s1, s2
 
 
-def print_moves(sequence, s1, s2, moves, move_color='\033[93m'):
+def print_moves(sequence, s1, s2, moves, move_color='\033[93m', Verbose = True):
 
     """
     print a folding path with colour coding
@@ -112,6 +112,7 @@ def print_moves(sequence, s1, s2, moves, move_color='\033[93m'):
     moves have to contain i,j or optionally i,j,en
     e.g. [(0, 0, -15.4), (-2, -24, -13.2), (-3, -23, -11.6)]
 
+    without verbosity, this just returns max_en
     """
 
     # print (moves)
@@ -128,7 +129,7 @@ def print_moves(sequence, s1, s2, moves, move_color='\033[93m'):
         BOLD = '\033[1m'
         UNDERLINE = '\033[4m'
 
-    print(sequence)
+    if Verbose: print(sequence)
     s = s1
 
     fc = RNA.fold_compound(sequence)
@@ -158,14 +159,17 @@ def print_moves(sequence, s1, s2, moves, move_color='\033[93m'):
 
     for s, i, j, en in output_rows:
 
+        # print initial row with move (0,0)
         if i == 0:
             info = f'{move_color}[{i:4}, {j:4} ]{c.ENDC} {en:6.2f}'
-            print(f"{s} {info}")
+            if Verbose: print(f"{s} {info}")
             continue
 
         pos_i = abs(i)-1
         pos_j = abs(j)-1
-         
+
+        # if a move has an identical inverse copy (1,2) <-> (-1,-2)
+        # it is automatically an indirect move - these are colored in red 
         if (-i, -j) in moves_i_j: # indirect move
             colored_s = s[0:pos_i] + c.RED + c.BOLD + s[pos_i] + c.ENDC +\
                 s[pos_i+1:pos_j] + c.RED + c.BOLD + \
@@ -182,13 +186,13 @@ def print_moves(sequence, s1, s2, moves, move_color='\033[93m'):
         else:
             info += f' {en:6.2f}'
 
-        print(f"{colored_s} {info}")
+        if Verbose: print(f"{colored_s} {info}")
 
     barrier = max_en - e1
-    print(
+    if Verbose: print(
         f"S: {max_en:6.2f} kcal/mol | B: {barrier:6.2f} kcal/mol | E[start]:{e1:6.2f} E[end]:{e2:6.2f}")
     
-    return
+    return max_en
 
 
 def plot_layout(sequence, structure, size=500, layout=0):

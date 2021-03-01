@@ -37,7 +37,7 @@ df = pd.read_csv(filename)
 Verbose = False
 Verbose = True
 search_width = 500
-indirect_iterations = 3
+indirect_iterations = 2
 
 Debug = False
 
@@ -54,7 +54,7 @@ for index, row in df.iterrows():
     # 100.15 requires high search width
 
 
-    if index!=9:
+    if index!=10:
         continue
     # if index<14:
     #     continue
