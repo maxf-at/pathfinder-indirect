@@ -183,8 +183,8 @@ if __name__ == '__main__':
     # rna_db.insert_path(sequence, s1, s2, database, moves, info)
 
     # dataset = "indirect_60.csv"
-    # dataset = "indirect_ea_60.csv"
-    dataset = "indirect_input_80.csv"
+    dataset = "indirect_ea_60.csv"
+    # dataset = "indirect_input_80.csv"
 
     description = "RNAeapath"
     # description = "TABU"
