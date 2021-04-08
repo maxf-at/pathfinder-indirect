@@ -14306,118 +14306,6 @@ a.anchor-link {
 
 </div>
 
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[6]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># https://stackoverflow.com/questions/22787209/how-to-have-clusters-of-stacked-bars-with-python-pandas</span>
-
-<span class="k">def</span> <span class="nf">plot_clustered_stacked</span><span class="p">(</span><span class="n">dfall</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="n">H</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Given a list of dataframes, with identical columns and index, create a clustered stacked bar plot. </span>
-<span class="sd">    labels is a list of the names of the dataframe, used for the legend</span>
-<span class="sd">    title is a string for the title of the plot</span>
-<span class="sd">    H is the hatch used for identification of the different dataframe</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">n_df</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfall</span><span class="p">)</span>
-    <span class="n">n_col</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfall</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> 
-    <span class="n">n_ind</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfall</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
-    <span class="n">axe</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">dfall</span> <span class="p">:</span> <span class="c1"># for each data frame</span>
-        <span class="n">axe</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span>
-                      <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                      <span class="n">stacked</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                      <span class="n">ax</span><span class="o">=</span><span class="n">axe</span><span class="p">,</span>
-                      <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                      <span class="n">grid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                      <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># make bar plots</span>
-
-    <span class="n">h</span><span class="p">,</span><span class="n">l</span> <span class="o">=</span> <span class="n">axe</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">()</span> <span class="c1"># get the handles we want to modify</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_df</span> <span class="o">*</span> <span class="n">n_col</span><span class="p">,</span> <span class="n">n_col</span><span class="p">):</span> <span class="c1"># len(h) = n_col * n_df</span>
-        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">pa</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">n_col</span><span class="p">]):</span>
-            <span class="k">for</span> <span class="n">rect</span> <span class="ow">in</span> <span class="n">pa</span><span class="o">.</span><span class="n">patches</span><span class="p">:</span> <span class="c1"># for each index</span>
-                <span class="n">rect</span><span class="o">.</span><span class="n">set_x</span><span class="p">(</span><span class="n">rect</span><span class="o">.</span><span class="n">get_x</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_df</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_col</span><span class="p">))</span>
-                <span class="n">rect</span><span class="o">.</span><span class="n">set_hatch</span><span class="p">(</span><span class="n">H</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">n_col</span><span class="p">))</span> <span class="c1">#edited part     </span>
-                <span class="n">rect</span><span class="o">.</span><span class="n">set_width</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_df</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
-
-    <span class="n">axe</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n_ind</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_df</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span>
-    <span class="n">axe</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">rotation</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">axe</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
-
-    <span class="c1"># Add invisible data to add another legend</span>
-    <span class="n">n</span><span class="o">=</span><span class="p">[]</span>        
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_df</span><span class="p">):</span>
-        <span class="n">n</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">axe</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">hatch</span><span class="o">=</span><span class="n">H</span> <span class="o">*</span> <span class="n">i</span><span class="p">))</span>
-
-    <span class="n">l1</span> <span class="o">=</span> <span class="n">axe</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">h</span><span class="p">[:</span><span class="n">n_col</span><span class="p">],</span> <span class="n">l</span><span class="p">[:</span><span class="n">n_col</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="p">[</span><span class="mf">1.04</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">])</span>
-    <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">l2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="p">[</span><span class="mf">1.04</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span> 
-    <span class="n">axe</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">l1</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">axe</span>
-
-<span class="c1"># create fake dataframes</span>
-<span class="n">df1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
-                   <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">],</span>
-                   <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="s2">&quot;J&quot;</span><span class="p">,</span> <span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">])</span>
-<span class="n">df2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
-                   <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">],</span>
-                   <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="s2">&quot;J&quot;</span><span class="p">,</span> <span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">])</span>
-<span class="c1"># df3 = pd.DataFrame(np.random.rand(4, 5),</span>
-<span class="c1">#                    index=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;], </span>
-<span class="c1">#                    columns=[&quot;I&quot;, &quot;J&quot;, &quot;K&quot;, &quot;L&quot;, &quot;M&quot;])</span>
-
-<span class="c1"># exmample call</span>
-<span class="n">plot_clustered_stacked</span><span class="p">([</span><span class="n">df1</span><span class="p">,</span> <span class="n">df2</span><span class="p">],[</span><span class="s2">&quot;df1&quot;</span><span class="p">,</span> <span class="s2">&quot;df2&quot;</span><span class="p">])</span>    
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-<div class="jp-Cell-outputWrapper">
-
-
-<div class="jp-OutputArea jp-Cell-outputArea">
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[6]:</div>
-
-
-
-
-<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain">
-<pre>&lt;AxesSubplot:&gt;</pre>
-</div>
-
-</div>
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-
-
-
-
-<div class="jp-RenderedImage jp-OutputArea-output ">
-<img src="data:image/png;base64,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
-"
->
-</div>
-
-</div>
-
-</div>
-
-</div>
-
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
@@ -16198,11 +16086,11 @@ S:   3.20 kcal/mol | B:   4.00 kcal/mol | E[start]: -0.80 E[end]: -6.00
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[1]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[3]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;../../../pathfinder_i&quot;</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;../../pathfinder_i&quot;</span><span class="p">)</span>
 <span class="kn">import</span> <span class="nn">pathfinder_i_2</span>
 <span class="c1"># import merge_composition</span>
 <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;../pathfinder/documents/benchmarks&quot;</span><span class="p">)</span>
@@ -16216,7 +16104,7 @@ S:   3.20 kcal/mol | B:   4.00 kcal/mol | E[start]: -0.80 E[end]: -6.00
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[3]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[5]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># rna2dfold example</span>
@@ -16236,7 +16124,7 @@ S:   3.20 kcal/mol | B:   4.00 kcal/mol | E[start]: -0.80 E[end]: -6.00
 <span class="c1"># Debug = True</span>
 <span class="n">Debug</span> <span class="o">=</span> <span class="kc">False</span>
 
-<span class="n">indirect_iterations</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">indirect_iterations</span> <span class="o">=</span> <span class="mi">2</span>
 
 <span class="n">paths</span> <span class="o">=</span> <span class="n">pathfinder_i_2</span><span class="o">.</span><span class="n">find_path</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="n">indirect_iterations</span><span class="o">=</span><span class="n">indirect_iterations</span><span class="p">,</span> <span class="n">add_moves</span><span class="o">=</span><span class="n">add_moves</span><span class="p">,</span>
 <span class="n">search_width</span><span class="o">=</span><span class="n">search_width</span><span class="p">,</span> <span class="n">Debug</span><span class="o">=</span><span class="n">Debug</span><span class="p">,</span> <span class="n">Verbose</span><span class="o">=</span><span class="n">Verbose</span><span class="p">)</span>
@@ -16261,6 +16149,45 @@ S:   3.20 kcal/mol | B:   4.00 kcal/mol | E[start]: -0.80 E[end]: -6.00
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
 <pre>Iteration 0 launching findpath with addtional moves: set()
 New best result:  -5.00 kcal/mol | B:  13.10 kcal/mol | E[start]:-18.10 E[end]:-17.70 | additional moves: []
+call find_stack for best path
+common:
+...............(((((.....)))))...............
+saddle structure: [0, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 30, 29, 28, 27, 26, 0, 0, 0, 0, 0, 20, 19, 18, 17, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+...(.......)...(((((.....)))))...............
+s1s2
+(((((.....)))))(((((.....)))))(((((.....)))))
+((((((((((.....(((((.....))))).....))))))))))
+bfs done
+Iteration 1 launching findpath with addtional moves: {(6, 12), (3, 14), (2, 15), (7, 11), (5, 13)}
+New best result:  -5.80 kcal/mol | B:  12.30 kcal/mol | E[start]:-18.10 E[end]:-17.70 | additional moves: [(6, 12), (7, 11), (5, 13)]
+Iteration 1 launching findpath with addtional moves: {(6, 12), (7, 11), (3, 15), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (3, 9), (4, 8), (1, 11), (2, 10), (7, 11), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (8, 14), (7, 15), (7, 11), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (8, 13), (7, 14), (7, 11), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (7, 11), (1, 14), (2, 13), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (7, 11), (14, 32), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (8, 13), (5, 15), (7, 14), (7, 11), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (15, 32), (7, 11), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (6, 42), (7, 41), (5, 43), (7, 11), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (-16, -30), (7, 11), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (15, 32), (6, 42), (7, 41), (5, 43), (7, 11), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (6, 42), (7, 41), (5, 43), (7, 11), (14, 32), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (1, 6), (7, 11), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (5, 10), (7, 11), (1, 14), (2, 13), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (3, 11), (7, 11), (1, 14), (2, 13), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (4, 40), (3, 41), (7, 11), (5, 39), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (7, 11), (1, 14), (2, 13), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (7, 11), (2, 11), (3, 10), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (8, 14), (5, 39), (5, 13), (4, 40), (7, 15), (3, 41), (7, 11)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (10, 33), (11, 32), (5, 39), (5, 13), (4, 40), (3, 41), (7, 11)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (13, 32), (7, 11), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (2, 43), (7, 11), (1, 44), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (5, 39), (5, 13), (8, 13), (4, 40), (3, 41), (7, 11), (7, 14)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (4, 40), (3, 41), (7, 11), (5, 39), (14, 32), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (5, 14), (7, 11), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (3, 14), (2, 15), (7, 11), (5, 13)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (3, 14), (5, 13), (2, 15), (7, 11)}
+Iteration 1 launching findpath with addtional moves: {(6, 12), (3, 44), (7, 11), (2, 45), (5, 13)}
 GGGCGCGGUUCGCCCUCCGCUAAAUGCGGAAGAUAAAUUGUGUCU
 (((((.....)))))(((((.....)))))(((((.....))))) <span class="ansi-green-intense-fg">[   0,    0 ]</span> -18.10
 (((((.....)))))(((((.....)))))<span class="ansi-green-intense-fg ansi-bold">.</span>((((.....))))<span class="ansi-green-intense-fg ansi-bold">.</span> <span class="ansi-green-intense-fg">[ -31,  -45 ]</span> -17.20
@@ -16269,21 +16196,183 @@ GGGCGCGGUUCGCCCUCCGCUAAAUGCGGAAGAUAAAUUGUGUCU
 (((((.....)))))(((((.....))))).(<span class="ansi-green-intense-fg ansi-bold">.</span>.........<span class="ansi-green-intense-fg ansi-bold">.</span>). <span class="ansi-green-intense-fg">[ -33,  -43 ]</span> -12.70
 (((((.....)))))(((((.....))))).<span class="ansi-green-intense-fg ansi-bold">.</span>...........<span class="ansi-green-intense-fg ansi-bold">.</span>. <span class="ansi-green-intense-fg">[ -32,  -44 ]</span> -16.80
 ((((<span class="ansi-green-intense-fg ansi-bold">.</span>.....<span class="ansi-green-intense-fg ansi-bold">.</span>))))(((((.....)))))............... <span class="ansi-green-intense-fg">[  -5,  -11 ]</span> -15.10
-<span class="ansi-green-intense-fg ansi-bold">.</span>(((.......)))<span class="ansi-green-intense-fg ansi-bold">.</span>(((((.....)))))............... <span class="ansi-green-intense-fg">[  -1,  -15 ]</span> -11.60
-.<span class="ansi-green-intense-fg ansi-bold">.</span>((.......))<span class="ansi-green-intense-fg ansi-bold">.</span>.(((((.....)))))............... <span class="ansi-green-intense-fg">[  -2,  -14 ]</span>  -8.30
-..<span class="ansi-green-intense-fg ansi-bold">.</span>(.......)<span class="ansi-green-intense-fg ansi-bold">.</span>..(((((.....)))))............... <span class="ansi-green-intense-fg">[  -3,  -13 ]</span> <span class="ansi-red-intense-fg ansi-bold"> -5.00</span>
-...<span class="ansi-green-intense-fg ansi-bold">.</span>.......<span class="ansi-green-intense-fg ansi-bold">.</span>...(((((.....)))))............... <span class="ansi-green-intense-fg">[  -4,  -12 ]</span>  -8.40
-.....<span class="ansi-green-intense-fg ansi-bold">(</span>.........(((((.....))))).........<span class="ansi-green-intense-fg ansi-bold">)</span>..... <span class="ansi-green-intense-fg">[   6,   40 ]</span>  -5.20
-....<span class="ansi-green-intense-fg ansi-bold">(</span>(.........(((((.....))))).........)<span class="ansi-green-intense-fg ansi-bold">)</span>.... <span class="ansi-green-intense-fg">[   5,   41 ]</span>  -6.90
-...<span class="ansi-green-intense-fg ansi-bold">(</span>((.........(((((.....))))).........))<span class="ansi-green-intense-fg ansi-bold">)</span>... <span class="ansi-green-intense-fg">[   4,   42 ]</span>  -9.10
-..<span class="ansi-green-intense-fg ansi-bold">(</span>(((.........(((((.....))))).........)))<span class="ansi-green-intense-fg ansi-bold">)</span>.. <span class="ansi-green-intense-fg">[   3,   43 ]</span> -10.70
-.<span class="ansi-green-intense-fg ansi-bold">(</span>((((.........(((((.....))))).........))))<span class="ansi-green-intense-fg ansi-bold">)</span>. <span class="ansi-green-intense-fg">[   2,   44 ]</span> -13.00
-.(((((<span class="ansi-green-intense-fg ansi-bold">(</span>........(((((.....)))))........<span class="ansi-green-intense-fg ansi-bold">)</span>))))). <span class="ansi-green-intense-fg">[   7,   39 ]</span> -13.80
-.((((((<span class="ansi-green-intense-fg ansi-bold">(</span>.......(((((.....))))).......<span class="ansi-green-intense-fg ansi-bold">)</span>)))))). <span class="ansi-green-intense-fg">[   8,   38 ]</span> -14.40
-.(((((((<span class="ansi-green-intense-fg ansi-bold">(</span>......(((((.....)))))......<span class="ansi-green-intense-fg ansi-bold">)</span>))))))). <span class="ansi-green-intense-fg">[   9,   37 ]</span> -16.00
-.((((((((<span class="ansi-green-intense-fg ansi-bold">(</span>.....(((((.....))))).....<span class="ansi-green-intense-fg ansi-bold">)</span>)))))))). <span class="ansi-green-intense-fg">[  10,   36 ]</span> -17.10
-<span class="ansi-green-intense-fg ansi-bold">(</span>(((((((((.....(((((.....))))).....)))))))))<span class="ansi-green-intense-fg ansi-bold">)</span> <span class="ansi-green-intense-fg">[   1,   45 ]</span> -17.70
-S:  -5.00 kcal/mol | B:  13.10 kcal/mol | E[start]:-18.10 E[end]:-17.70
+(((<span class="ansi-green-intense-fg ansi-bold">.</span>.......<span class="ansi-green-intense-fg ansi-bold">.</span>)))(((((.....)))))............... <span class="ansi-green-intense-fg">[  -4,  -12 ]</span> -10.90
+(((..<span class="ansi-red-intense-fg ansi-bold">(</span>.....<span class="ansi-red-intense-fg ansi-bold">)</span>)))(((((.....)))))............... <span class="ansi-red-intense-fg">[   6,   12 ]</span>  -9.20
+(((..(<span class="ansi-red-intense-fg ansi-bold">(</span>...<span class="ansi-red-intense-fg ansi-bold">)</span>))))(((((.....)))))............... <span class="ansi-red-intense-fg">[   7,   11 ]</span> -10.40
+((<span class="ansi-green-intense-fg ansi-bold">.</span>..((...))<span class="ansi-green-intense-fg ansi-bold">.</span>))(((((.....)))))............... <span class="ansi-green-intense-fg">[  -3,  -13 ]</span>  -7.60
+((..<span class="ansi-red-intense-fg ansi-bold">(</span>((...))<span class="ansi-red-intense-fg ansi-bold">)</span>))(((((.....)))))............... <span class="ansi-red-intense-fg">[   5,   13 ]</span> -10.50
+(<span class="ansi-green-intense-fg ansi-bold">.</span>..(((...)))<span class="ansi-green-intense-fg ansi-bold">.</span>)(((((.....)))))............... <span class="ansi-green-intense-fg">[  -2,  -14 ]</span>  -7.70
+<span class="ansi-green-intense-fg ansi-bold">.</span>...(((...))).<span class="ansi-green-intense-fg ansi-bold">.</span>(((((.....)))))............... <span class="ansi-green-intense-fg">[  -1,  -15 ]</span>  -9.90
+...<span class="ansi-green-intense-fg ansi-bold">(</span>(((...)))..(((((.....)))))...........<span class="ansi-green-intense-fg ansi-bold">)</span>... <span class="ansi-green-intense-fg">[   4,   42 ]</span>  -5.90
+..<span class="ansi-green-intense-fg ansi-bold">(</span>((((...)))..(((((.....)))))...........)<span class="ansi-green-intense-fg ansi-bold">)</span>.. <span class="ansi-green-intense-fg">[   3,   43 ]</span>  -7.50
+.<span class="ansi-green-intense-fg ansi-bold">(</span>(((((...)))..(((((.....)))))...........))<span class="ansi-green-intense-fg ansi-bold">)</span>. <span class="ansi-green-intense-fg">[   2,   44 ]</span>  -9.80
+<span class="ansi-green-intense-fg ansi-bold">(</span>((((((...)))..(((((.....)))))...........)))<span class="ansi-green-intense-fg ansi-bold">)</span> <span class="ansi-green-intense-fg">[   1,   45 ]</span> -10.40
+((((((<span class="ansi-red-intense-fg ansi-bold">.</span>...<span class="ansi-red-intense-fg ansi-bold">.</span>))..(((((.....)))))...........)))) <span class="ansi-red-intense-fg">[  -7,  -11 ]</span>  -9.20
+((((<span class="ansi-red-intense-fg ansi-bold">.</span>(.....)<span class="ansi-red-intense-fg ansi-bold">.</span>..(((((.....)))))...........)))) <span class="ansi-red-intense-fg">[  -5,  -13 ]</span> <span class="ansi-red-intense-fg ansi-bold"> -5.80</span>
+((((.<span class="ansi-red-intense-fg ansi-bold">.</span>.....<span class="ansi-red-intense-fg ansi-bold">.</span>...(((((.....)))))...........)))) <span class="ansi-red-intense-fg">[  -6,  -12 ]</span>  -9.40
+((((<span class="ansi-green-intense-fg ansi-bold">(</span>..........(((((.....)))))..........<span class="ansi-green-intense-fg ansi-bold">)</span>)))) <span class="ansi-green-intense-fg">[   5,   41 ]</span> -10.20
+(((((<span class="ansi-green-intense-fg ansi-bold">(</span>.........(((((.....))))).........<span class="ansi-green-intense-fg ansi-bold">)</span>))))) <span class="ansi-green-intense-fg">[   6,   40 ]</span> -13.60
+((((((<span class="ansi-green-intense-fg ansi-bold">(</span>........(((((.....)))))........<span class="ansi-green-intense-fg ansi-bold">)</span>)))))) <span class="ansi-green-intense-fg">[   7,   39 ]</span> -14.40
+(((((((<span class="ansi-green-intense-fg ansi-bold">(</span>.......(((((.....))))).......<span class="ansi-green-intense-fg ansi-bold">)</span>))))))) <span class="ansi-green-intense-fg">[   8,   38 ]</span> -15.00
+((((((((<span class="ansi-green-intense-fg ansi-bold">(</span>......(((((.....)))))......<span class="ansi-green-intense-fg ansi-bold">)</span>)))))))) <span class="ansi-green-intense-fg">[   9,   37 ]</span> -16.60
+(((((((((<span class="ansi-green-intense-fg ansi-bold">(</span>.....(((((.....))))).....<span class="ansi-green-intense-fg ansi-bold">)</span>))))))))) <span class="ansi-green-intense-fg">[  10,   36 ]</span> -17.70
+S:  -5.80 kcal/mol | B:  12.30 kcal/mol | E[start]:-18.10 E[end]:-17.70
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[12]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># 2 alt 1-4</span>
+<span class="n">sequence</span> <span class="o">=</span> <span class="s2">&quot;GGAAGCCGGCGAGGCAGUACCAUUAUAUAGUUUGUCUUCCAAGAAUGGGUACGACCGCGGGACCGUUCGGUUAUCGUCUG&quot;</span>
+<span class="n">s1</span>       <span class="o">=</span> <span class="s2">&quot;((.((((((.(((((((.((.........)))))))))))..((((((...((....))...)))))))))).)).....&quot;</span>
+<span class="n">s2</span>       <span class="o">=</span> <span class="s2">&quot;((.((((((((.((..((((((((....((.....))......))))).)))..)).)).......)))))).)).....&quot;</span>
+<span class="n">s1</span><span class="p">,</span> <span class="n">s2</span> <span class="o">=</span> <span class="n">s2</span><span class="p">,</span> <span class="n">s1</span>
+
+<span class="c1"># add_moves = [(10, 65), (11, 64), (14, 58), (15, 57), (49, 63), (50, 62), (48, 64)]</span>
+<span class="n">add_moves</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">section</span> <span class="o">=</span> <span class="p">()</span>
+<span class="n">search_width</span> <span class="o">=</span> <span class="mi">64</span>
+<span class="c1"># search_width = 640</span>
+<span class="n">Verbose</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">Debug</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># indirect_iterations = 1</span>
+<span class="n">indirect_iterations</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="n">paths</span> <span class="o">=</span> <span class="n">pathfinder_i_2</span><span class="o">.</span><span class="n">find_path</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="n">indirect_iterations</span><span class="o">=</span><span class="n">indirect_iterations</span><span class="p">,</span> <span class="n">add_moves</span><span class="o">=</span><span class="n">add_moves</span><span class="p">,</span>
+                  <span class="n">search_width</span><span class="o">=</span><span class="n">search_width</span><span class="p">,</span> <span class="n">Debug</span><span class="o">=</span><span class="n">Debug</span><span class="p">,</span> <span class="n">Verbose</span><span class="o">=</span><span class="n">Verbose</span><span class="p">)</span>    
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>Iteration 0 launching findpath with addtional moves: set()
+New best result:  -0.40 kcal/mol | B:  15.90 kcal/mol | E[start]:-16.30 E[end]:-18.40 | additional moves: []
+call find_stack for best path
+common:
+((.((((.............................................................)))).)).....
+saddle structure: [0, 75, 74, 0, 72, 71, 70, 69, 68, 67, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 47, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 0, 0, 0, 0, 59, 58, 0, 0, 0, 0, 53, 52, 0, 0, 0, 0, 0, 0, 0, 9, 8, 7, 6, 5, 4, 0, 2, 1, 0, 0, 0, 0, 0]
+((.((((((...........(.........................)....((....)).......)))))).)).....
+s1s2
+((.((((((((.((..((((((((....((.....))......))))).)))..)).)).......)))))).)).....
+((.((((((.(((((((.((.........)))))))))))..((((((...((....))...)))))))))).)).....
+bfs done
+Iteration 1 launching findpath with addtional moves: {(17, 55), (23, 48), (18, 54), (8, 64), (14, 58), (9, 63), (26, 45), (24, 47), (25, 46), (15, 57)}
+Iteration 1 launching findpath with addtional moves: {(9, 66), (14, 58), (18, 54), (17, 55), (11, 64), (15, 57), (10, 65)}
+New best result:  -2.80 kcal/mol | B:  13.50 kcal/mol | E[start]:-16.30 E[end]:-18.40 | additional moves: [(10, 65), (11, 64), (14, 58), (15, 57), (17, 55), (18, 54)]
+Iteration 1 launching findpath with addtional moves: {(17, 55), (9, 66), (15, 57), (27, 46), (28, 45), (11, 64), (10, 65), (18, 54), (14, 58), (26, 47)}
+Iteration 1 launching findpath with addtional moves: {(37, 42), (36, 43), (17, 55), (11, 64), (10, 65), (18, 54), (14, 58), (13, 64), (35, 44), (21, 59), (15, 57), (14, 63), (20, 60)}
+Iteration 1 launching findpath with addtional moves: {(17, 55), (9, 66), (24, 48), (15, 57), (23, 49), (22, 50), (11, 64), (10, 65), (18, 54), (14, 58)}
+Iteration 1 launching findpath with addtional moves: {(17, 55), (34, 39), (9, 66), (15, 57), (32, 41), (11, 64), (31, 42), (10, 65), (18, 54), (14, 58)}
+Iteration 1 launching findpath with addtional moves: {(17, 55), (27, 46), (28, 45), (11, 64), (10, 65), (18, 54), (14, 58), (8, 64), (9, 63), (15, 57), (26, 47)}
+Iteration 1 launching findpath with addtional moves: {(20, 53), (17, 55), (11, 64), (10, 65), (18, 54), (14, 58), (9, 66), (15, 57)}
+Iteration 1 launching findpath with addtional moves: {(23, 49), (22, 50), (17, 55), (11, 64), (10, 65), (18, 54), (14, 58), (8, 64), (9, 63), (24, 48), (15, 57)}
+Iteration 1 launching findpath with addtional moves: {(17, 55), (23, 48), (9, 66), (15, 57), (11, 64), (10, 65), (18, 54), (14, 58), (24, 47), (25, 46)}
+Iteration 1 launching findpath with addtional moves: {(17, 55), (11, 64), (10, 65), (18, 54), (14, 58), (9, 66), (13, 63), (15, 57)}
+Iteration 1 launching findpath with addtional moves: {(17, 55), (11, 64), (34, 39), (31, 42), (10, 65), (18, 54), (14, 58), (8, 64), (9, 63), (15, 57), (32, 41)}
+Iteration 1 launching findpath with addtional moves: {(17, 55), (11, 64), (17, 58), (10, 65), (18, 54), (14, 58), (9, 66), (18, 57), (13, 63), (15, 57)}
+Iteration 1 launching findpath with addtional moves: {(20, 53), (17, 55), (11, 64), (10, 65), (18, 54), (14, 58), (8, 64), (9, 63), (15, 57)}
+Iteration 1 launching findpath with addtional moves: {(17, 55), (34, 39), (8, 64), (9, 63), (15, 57), (27, 46), (28, 45), (11, 64), (10, 65), (18, 54), (14, 58), (26, 47)}
+Iteration 1 launching findpath with addtional moves: {(17, 55), (8, 64), (9, 63), (15, 57), (27, 46), (28, 45), (11, 64), (31, 42), (10, 65), (18, 54), (14, 58), (26, 47)}
+Iteration 1 launching findpath with addtional moves: {(17, 55), (11, 64), (17, 58), (10, 65), (18, 54), (14, 58), (9, 66), (18, 57), (15, 57), (15, 60)}
+Iteration 1 launching findpath with addtional moves: {(17, 55), (34, 39), (8, 64), (24, 48), (9, 63), (15, 57), (23, 49), (22, 50), (11, 64), (10, 65), (18, 54), (14, 58)}
+Iteration 1 launching findpath with addtional moves: {(17, 55), (9, 66), (15, 57), (32, 41), (20, 53), (11, 64), (31, 42), (10, 65), (18, 54), (14, 58)}
+Iteration 1 launching findpath with addtional moves: {(20, 53), (17, 55), (11, 64), (34, 39), (10, 65), (18, 54), (14, 58), (9, 66), (15, 57)}
+Iteration 1 launching findpath with addtional moves: {(17, 55), (11, 64), (30, 39), (10, 65), (18, 54), (14, 58), (9, 66), (15, 57)}
+Iteration 1 launching findpath with addtional moves: {(17, 55), (9, 66), (15, 57), (34, 40), (32, 41), (11, 64), (31, 42), (10, 65), (18, 54), (14, 58)}
+Iteration 1 launching findpath with addtional moves: {(17, 55), (11, 64), (10, 65), (18, 54), (14, 58), (9, 66), (21, 49), (15, 57)}
+Iteration 1 launching findpath with addtional moves: {(58, 65), (17, 55), (59, 64), (11, 64), (10, 65), (18, 54), (14, 58), (15, 57), (57, 66)}
+Iteration 1 launching findpath with addtional moves: {(17, 55), (11, 64), (10, 65), (18, 54), (14, 58), (13, 63), (15, 57)}
+Iteration 1 launching findpath with addtional moves: {(17, 55), (11, 64), (10, 65), (18, 54), (14, 58), (15, 57)}
+New best result:  -2.80 kcal/mol | B:  13.50 kcal/mol | E[start]:-16.30 E[end]:-18.40 | additional moves: [(10, 65), (11, 64), (14, 58), (15, 57), (17, 55)]
+Iteration 1 launching findpath with addtional moves: {(13, 64), (14, 58), (15, 61), (17, 55), (14, 63), (11, 64), (15, 57), (10, 65)}
+Iteration 1 launching findpath with addtional moves: {(14, 58), (17, 55), (11, 64), (15, 57), (10, 65)}
+New best result:  -2.80 kcal/mol | B:  13.50 kcal/mol | E[start]:-16.30 E[end]:-18.40 | additional moves: [(10, 65), (11, 64), (14, 58), (15, 57)]
+Iteration 1 launching findpath with addtional moves: {(50, 62), (11, 64), (10, 65), (14, 58), (49, 63), (48, 64), (15, 57)}
+New best result:  -3.30 kcal/mol | B:  13.00 kcal/mol | E[start]:-16.30 E[end]:-18.40 | additional moves: [(10, 65), (11, 64), (14, 58), (15, 57), (49, 63), (50, 62), (48, 64)]
+Iteration 1 launching findpath with addtional moves: {(50, 62), (41, 46), (11, 64), (10, 65), (14, 58), (49, 63), (48, 64), (40, 47), (15, 57), (39, 48)}
+Iteration 1 launching findpath with addtional moves: {(50, 62), (11, 64), (14, 20), (13, 21), (10, 65), (14, 58), (49, 63), (48, 64), (15, 57)}
+Iteration 1 launching findpath with addtional moves: {(20, 34), (50, 62), (17, 36), (11, 64), (14, 39), (10, 65), (19, 35), (14, 58), (49, 63), (48, 64), (16, 37), (15, 57), (13, 40)}
+Iteration 1 launching findpath with addtional moves: {(50, 62), (11, 39), (11, 64), (14, 36), (10, 65), (12, 38), (14, 58), (49, 63), (48, 64), (13, 37), (15, 57)}
+Iteration 1 launching findpath with addtional moves: {(50, 62), (11, 39), (11, 64), (10, 65), (12, 38), (14, 58), (49, 63), (48, 64), (13, 37), (15, 57)}
+Iteration 1 launching findpath with addtional moves: {(50, 62), (11, 39), (11, 64), (10, 65), (12, 38), (14, 58), (49, 63), (48, 64), (15, 57)}
+Iteration 1 launching findpath with addtional moves: {(50, 62), (11, 39), (11, 64), (10, 65), (12, 38), (14, 58), (49, 63), (48, 64), (15, 57)}
+GGAAGCCGGCGAGGCAGUACCAUUAUAUAGUUUGUCUUCCAAGAAUGGGUACGACCGCGGGACCGUUCGGUUAUCGUCUG
+((.((((((((.((..((((((((....((.....))......))))).)))..)).)).......)))))).))..... <span class="ansi-green-intense-fg">[   0,    0 ]</span> -16.30
+((.(((((((<span class="ansi-green-intense-fg ansi-bold">.</span>.((..((((((((....((.....))......))))).)))..)).<span class="ansi-green-intense-fg ansi-bold">.</span>).......)))))).))..... <span class="ansi-green-intense-fg">[ -11,  -58 ]</span> -13.20
+((.((((((<span class="ansi-green-intense-fg ansi-bold">.</span>..((..((((((((....((.....))......))))).)))..))..<span class="ansi-green-intense-fg ansi-bold">.</span>.......)))))).))..... <span class="ansi-green-intense-fg">[ -10,  -59 ]</span> -13.40
+((.((((((<span class="ansi-red-intense-fg ansi-bold">(</span>..((..((((((((....((.....))......))))).)))..))........<span class="ansi-red-intense-fg ansi-bold">)</span>.)))))).))..... <span class="ansi-red-intense-fg">[  10,   65 ]</span> -13.10
+((.(((((((<span class="ansi-red-intense-fg ansi-bold">(</span>.((..((((((((....((.....))......))))).)))..)).......<span class="ansi-red-intense-fg ansi-bold">)</span>).)))))).))..... <span class="ansi-red-intense-fg">[  11,   64 ]</span> -14.70
+((.((((((((.<span class="ansi-green-intense-fg ansi-bold">.</span>(..((((((((....((.....))......))))).)))..)<span class="ansi-green-intense-fg ansi-bold">.</span>.......)).)))))).))..... <span class="ansi-green-intense-fg">[ -13,  -56 ]</span> -11.20
+((.((((((((..<span class="ansi-green-intense-fg ansi-bold">.</span>..((((((((....((.....))......))))).)))..<span class="ansi-green-intense-fg ansi-bold">.</span>........)).)))))).))..... <span class="ansi-green-intense-fg">[ -14,  -55 ]</span> -11.30
+((.((((((((..<span class="ansi-red-intense-fg ansi-bold">(</span>..((((((((....((.....))......))))).))).....<span class="ansi-red-intense-fg ansi-bold">)</span>.....)).)))))).))..... <span class="ansi-red-intense-fg">[  14,   58 ]</span> -10.50
+((.((((((((..(<span class="ansi-red-intense-fg ansi-bold">(</span>.((((((((....((.....))......))))).)))....<span class="ansi-red-intense-fg ansi-bold">)</span>).....)).)))))).))..... <span class="ansi-red-intense-fg">[  15,   57 ]</span> -13.00
+((.((((((((..(<span class="ansi-red-intense-fg ansi-bold">.</span>.((((((((....((.....))......))))).)))....<span class="ansi-red-intense-fg ansi-bold">.</span>).....)).)))))).))..... <span class="ansi-red-intense-fg">[ -15,  -57 ]</span> -10.50
+((.((((((((..<span class="ansi-red-intense-fg ansi-bold">.</span>..((((((((....((.....))......))))).))).....<span class="ansi-red-intense-fg ansi-bold">.</span>.....)).)))))).))..... <span class="ansi-red-intense-fg">[ -14,  -58 ]</span> -11.30
+((.((((((((.....((<span class="ansi-green-intense-fg ansi-bold">.</span>(((((....((.....))......))))).<span class="ansi-green-intense-fg ansi-bold">.</span>))...........)).)))))).))..... <span class="ansi-green-intense-fg">[ -19,  -50 ]</span>  -9.70
+((.((((((((.....(<span class="ansi-green-intense-fg ansi-bold">.</span>.(((((....((.....))......)))))..<span class="ansi-green-intense-fg ansi-bold">.</span>)...........)).)))))).))..... <span class="ansi-green-intense-fg">[ -18,  -51 ]</span>  -8.00
+((.((((((((.....<span class="ansi-green-intense-fg ansi-bold">.</span>..(((((....((.....))......)))))...<span class="ansi-green-intense-fg ansi-bold">.</span>...........)).)))))).))..... <span class="ansi-green-intense-fg">[ -17,  -52 ]</span>  -9.00
+((.((((((((........(((((....((.....))......)))))...<span class="ansi-green-intense-fg ansi-bold">(</span>......<span class="ansi-green-intense-fg ansi-bold">)</span>....)).)))))).))..... <span class="ansi-green-intense-fg">[  52,   59 ]</span>  -8.60
+((.((((((((........(((((....((.....))......)))))...(<span class="ansi-green-intense-fg ansi-bold">(</span>....<span class="ansi-green-intense-fg ansi-bold">)</span>)....)).)))))).))..... <span class="ansi-green-intense-fg">[  53,   58 ]</span> -10.60
+((.((((((((........(((((....((.....))......)))))<span class="ansi-red-intense-fg ansi-bold">(</span>..((....))...<span class="ansi-red-intense-fg ansi-bold">)</span>)).)))))).))..... <span class="ansi-red-intense-fg">[  49,   63 ]</span>  -8.60
+((.((((((((........(((((....((.....))......)))))(<span class="ansi-red-intense-fg ansi-bold">(</span>.((....))..<span class="ansi-red-intense-fg ansi-bold">)</span>))).)))))).))..... <span class="ansi-red-intense-fg">[  50,   62 ]</span> -10.30
+((.((((((((........(((((....<span class="ansi-green-intense-fg ansi-bold">.</span>(.....)<span class="ansi-green-intense-fg ansi-bold">.</span>......)))))((.((....))..)))).)))))).))..... <span class="ansi-green-intense-fg">[ -29,  -37 ]</span>  -8.10
+((.((((((((........(((((.....<span class="ansi-green-intense-fg ansi-bold">.</span>.....<span class="ansi-green-intense-fg ansi-bold">.</span>.......)))))((.((....))..)))).)))))).))..... <span class="ansi-green-intense-fg">[ -30,  -36 ]</span>  -9.30
+((.(((((((<span class="ansi-red-intense-fg ansi-bold">.</span>........(((((...................)))))((.((....))..))<span class="ansi-red-intense-fg ansi-bold">.</span>).)))))).))..... <span class="ansi-red-intense-fg">[ -11,  -64 ]</span>  -6.90
+((.((((((<span class="ansi-red-intense-fg ansi-bold">.</span>.........(((((...................)))))((.((....))..)).<span class="ansi-red-intense-fg ansi-bold">.</span>.)))))).))..... <span class="ansi-red-intense-fg">[ -10,  -65 ]</span>  -6.90
+((.(((((<span class="ansi-green-intense-fg ansi-bold">.</span>..........(((((...................)))))((.((....))..))...<span class="ansi-green-intense-fg ansi-bold">.</span>))))).))..... <span class="ansi-green-intense-fg">[  -9,  -67 ]</span>  -6.70
+((.(((((...........<span class="ansi-green-intense-fg ansi-bold">.</span>((((...................))))<span class="ansi-green-intense-fg ansi-bold">.</span>((.((....))..))....))))).))..... <span class="ansi-green-intense-fg">[ -20,  -48 ]</span> <span class="ansi-red-intense-fg ansi-bold"> -3.30</span>
+((.(((((............((((...................))))<span class="ansi-red-intense-fg ansi-bold">(</span>((.((....))..))<span class="ansi-red-intense-fg ansi-bold">)</span>...))))).))..... <span class="ansi-red-intense-fg">[  48,   64 ]</span>  -7.20
+((.(((((............(((<span class="ansi-green-intense-fg ansi-bold">.</span>...................<span class="ansi-green-intense-fg ansi-bold">.</span>)))(((.((....))..)))...))))).))..... <span class="ansi-green-intense-fg">[ -24,  -44 ]</span>  -5.90
+((.(((((............((<span class="ansi-green-intense-fg ansi-bold">.</span>.....................<span class="ansi-green-intense-fg ansi-bold">.</span>))(((.((....))..)))...))))).))..... <span class="ansi-green-intense-fg">[ -23,  -45 ]</span>  -4.60
+((.(((((............(<span class="ansi-green-intense-fg ansi-bold">.</span>.......................<span class="ansi-green-intense-fg ansi-bold">.</span>)(((.((....))..)))...))))).))..... <span class="ansi-green-intense-fg">[ -22,  -46 ]</span>  -3.80
+((.(((((............<span class="ansi-green-intense-fg ansi-bold">.</span>.........................<span class="ansi-green-intense-fg ansi-bold">.</span>(((.((....))..)))...))))).))..... <span class="ansi-green-intense-fg">[ -21,  -47 ]</span>  -5.74
+((.(((((......<span class="ansi-green-intense-fg ansi-bold">(</span>..................<span class="ansi-green-intense-fg ansi-bold">)</span>.............(((.((....))..)))...))))).))..... <span class="ansi-green-intense-fg">[  15,   34 ]</span>  -3.80
+((.(((((.....<span class="ansi-green-intense-fg ansi-bold">(</span>(..................)<span class="ansi-green-intense-fg ansi-bold">)</span>............(((.((....))..)))...))))).))..... <span class="ansi-green-intense-fg">[  14,   35 ]</span>  -5.40
+((.(((((....<span class="ansi-green-intense-fg ansi-bold">(</span>((..................))<span class="ansi-green-intense-fg ansi-bold">)</span>...........(((.((....))..)))...))))).))..... <span class="ansi-green-intense-fg">[  13,   36 ]</span>  -7.70
+((.(((((...<span class="ansi-green-intense-fg ansi-bold">(</span>(((..................)))<span class="ansi-green-intense-fg ansi-bold">)</span>..........(((.((....))..)))...))))).))..... <span class="ansi-green-intense-fg">[  12,   37 ]</span>  -9.00
+((.(((((...((((<span class="ansi-green-intense-fg ansi-bold">(</span>................<span class="ansi-green-intense-fg ansi-bold">)</span>))))..........(((.((....))..)))...))))).))..... <span class="ansi-green-intense-fg">[  16,   33 ]</span> -10.20
+((.(((((..<span class="ansi-green-intense-fg ansi-bold">(</span>(((((................)))))<span class="ansi-green-intense-fg ansi-bold">)</span>.........(((.((....))..)))...))))).))..... <span class="ansi-green-intense-fg">[  11,   38 ]</span> -11.40
+((.(((((<span class="ansi-green-intense-fg ansi-bold">(</span>.((((((................))))))<span class="ansi-green-intense-fg ansi-bold">)</span>........(((.((....))..)))...))))).))..... <span class="ansi-green-intense-fg">[   9,   39 ]</span> -10.00
+((.((((<span class="ansi-green-intense-fg ansi-bold">.</span>(.((((((................)))))))........(((.((....))..)))...<span class="ansi-green-intense-fg ansi-bold">.</span>)))).))..... <span class="ansi-green-intense-fg">[  -8,  -68 ]</span>  -7.60
+((.((((<span class="ansi-green-intense-fg ansi-bold">(</span>(.((((((................)))))))<span class="ansi-green-intense-fg ansi-bold">)</span>.......(((.((....))..)))....)))).))..... <span class="ansi-green-intense-fg">[   8,   40 ]</span> -11.40
+((.((((((.((((((................))))))))..<span class="ansi-green-intense-fg ansi-bold">(</span>....(((.((....))..)))...<span class="ansi-green-intense-fg ansi-bold">)</span>)))).))..... <span class="ansi-green-intense-fg">[  43,   68 ]</span>  -9.50
+((.((((((.((((((................))))))))..(<span class="ansi-green-intense-fg ansi-bold">(</span>...(((.((....))..)))..<span class="ansi-green-intense-fg ansi-bold">)</span>))))).))..... <span class="ansi-green-intense-fg">[  44,   67 ]</span> -11.00
+((.((((((.((((((................))))))))..((<span class="ansi-green-intense-fg ansi-bold">(</span>..(((.((....))..))).<span class="ansi-green-intense-fg ansi-bold">)</span>)))))).))..... <span class="ansi-green-intense-fg">[  45,   66 ]</span> -12.60
+((.((((((.((((((................))))))))..(((<span class="ansi-green-intense-fg ansi-bold">(</span>.(((.((....))..)))<span class="ansi-green-intense-fg ansi-bold">)</span>))))))).))..... <span class="ansi-green-intense-fg">[  46,   65 ]</span> -13.50
+((.((((((.((((((................))))))))..((((.<span class="ansi-red-intense-fg ansi-bold">.</span>((.((....))..))<span class="ansi-red-intense-fg ansi-bold">.</span>)))))))).))..... <span class="ansi-red-intense-fg">[ -48,  -64 ]</span>  -9.60
+((.((((((.((((((................))))))))..((((<span class="ansi-green-intense-fg ansi-bold">(</span>.((.((....))..))<span class="ansi-green-intense-fg ansi-bold">)</span>)))))))).))..... <span class="ansi-green-intense-fg">[  47,   64 ]</span> -13.50
+((.((((((.((((((................))))))))..(((((.<span class="ansi-red-intense-fg ansi-bold">.</span>(.((....))..)<span class="ansi-red-intense-fg ansi-bold">.</span>))))))))).))..... <span class="ansi-red-intense-fg">[ -49,  -63 ]</span>  -8.80
+((.((((((.((((((................))))))))..(((((<span class="ansi-green-intense-fg ansi-bold">(</span>.(.((....))..)<span class="ansi-green-intense-fg ansi-bold">)</span>))))))))).))..... <span class="ansi-green-intense-fg">[  48,   63 ]</span> -13.50
+((.((((((.((((((................))))))))..((((((.<span class="ansi-red-intense-fg ansi-bold">.</span>.((....))..<span class="ansi-red-intense-fg ansi-bold">.</span>)))))))))).))..... <span class="ansi-red-intense-fg">[ -50,  -62 ]</span> -17.00
+((.((((((.((((((...<span class="ansi-green-intense-fg ansi-bold">(</span>.........<span class="ansi-green-intense-fg ansi-bold">)</span>..))))))))..((((((...((....))...)))))))))).))..... <span class="ansi-green-intense-fg">[  20,   30 ]</span> -14.80
+((.((((((.((((((..<span class="ansi-green-intense-fg ansi-bold">(</span>(.........)<span class="ansi-green-intense-fg ansi-bold">)</span>.))))))))..((((((...((....))...)))))))))).))..... <span class="ansi-green-intense-fg">[  19,   31 ]</span> -17.30
+((.((((((.((((((<span class="ansi-green-intense-fg ansi-bold">(</span>.((.........))<span class="ansi-green-intense-fg ansi-bold">)</span>))))))))..((((((...((....))...)))))))))).))..... <span class="ansi-green-intense-fg">[  17,   32 ]</span> -18.40
+S:  -3.30 kcal/mol | B:  13.00 kcal/mol | E[start]:-16.30 E[end]:-18.40
 </pre>
 </div>
 </div>
@@ -16295,7 +16384,7 @@ S:  -5.00 kcal/mol | B:  13.10 kcal/mol | E[start]:-18.10 E[end]:-17.70
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Example-2">Example 2<a class="anchor-link" href="#Example-2">&#182;</a></h2><p>path.001.007.txt Barriers output</p>
+<h2 id="Example-3">Example 3<a class="anchor-link" href="#Example-3">&#182;</a></h2><p>path.001.007.txt Barriers output</p>
 
 <pre><code>..(((((((..((((((......(((((.((((........)))).)))))))))))......))))))) (-18.00) L0007
 ..(((((((..((((((.......((((.((((........)))).)))).))))))......))))))) (-15.50) I    
@@ -16371,17 +16460,6 @@ s1s2
 ..(((((((..((((((......(((((.((((........)))).)))))))))))......)))))))
 ..(((((((..((((((...(((...((((......))))....)))....))))))......)))))))
 bfs done
-..(((((((..((((((...(((((.(.((.((...)).)).)..))))).))))))......))))))) -11.930000000000001 -18.6 [(21, 50), (22, 49), (23, 48), (24, 47), (25, 46), (27, 43), (29, 41), (30, 40), (32, 38), (33, 37)]
-..(((((((..((((((...(((((...(((((...)).)))...))))).))))))......))))))) -10.729999999999999 -17.4 [(21, 50), (22, 49), (23, 48), (24, 47), (25, 46), (29, 42), (30, 41), (31, 40), (32, 38), (33, 37)]
-..(((((((..((((((...(((((...(((.(....).)))...))))).))))))......))))))) -9.729999999999999 -16.4 [(21, 50), (22, 49), (23, 48), (24, 47), (25, 46), (29, 42), (30, 41), (31, 40), (33, 38)]
-..(((((((..((((((...((((....(((((....).))))...)))).))))))......))))))) -9.53 -16.2 [(21, 50), (22, 49), (23, 48), (24, 47), (29, 43), (30, 42), (31, 41), (32, 40), (33, 38)]
-..(((((((..((((((...((((....((.((......))))...)))).))))))......))))))) -9.53 -16.2 [(21, 50), (22, 49), (23, 48), (24, 47), (29, 43), (30, 42), (32, 41), (33, 40)]
-..(((((((..((((((...(((((.(.((((....)).)).)..))))).))))))......))))))) -9.03 -15.7 [(21, 50), (22, 49), (23, 48), (24, 47), (25, 46), (27, 43), (29, 41), (30, 40), (31, 38), (32, 37)]
-..(((((((..((((((...(((((.(.((..(....).)).)..))))).))))))......))))))) -7.93 -14.6 [(21, 50), (22, 49), (23, 48), (24, 47), (25, 46), (27, 43), (29, 41), (30, 40), (33, 38)]
-..(((((((..((((((...(((((...((.((....).)))...))))).))))))......))))))) -7.83 -14.5 [(21, 50), (22, 49), (23, 48), (24, 47), (25, 46), (29, 42), (30, 41), (32, 40), (33, 38)]
-..(((((((..((((((.(.......(.((.((...)).)).)......).))))))......))))))) -7.73 -14.4 [(19, 50), (27, 43), (29, 41), (30, 40), (32, 38), (33, 37)]
-..(((((((..((((((...((((....(((((...))..)))...)))).))))))......))))))) -7.33 -14.0 [(21, 50), (22, 49), (23, 48), (24, 47), (29, 43), (30, 42), (31, 41), (32, 38), (33, 37)]
-..(((((((..((((((...(((((...((.((...)).).)...))))).))))))......))))))) -7.130000000000001 -13.8 [(21, 50), (22, 49), (23, 48), (24, 47), (25, 46), (29, 42), (30, 40), (32, 38), (33, 37)]
 Iteration 1 launching findpath with addtional moves: {(27, 43), (22, 49), (32, 38), (23, 48), (21, 50), (33, 37), (29, 41), (24, 47), (25, 46), (30, 40)}
 New best result:  -5.80 kcal/mol | B:  12.20 kcal/mol | E[start]:-18.00 E[end]:-18.70 | additional moves: [(21, 50), (22, 49), (23, 48), (24, 47), (25, 46)]
 Iteration 1 launching findpath with addtional moves: {(31, 40), (29, 42), (30, 41), (22, 49), (32, 38), (23, 48), (21, 50), (33, 37), (24, 47), (25, 46)}
@@ -16406,318 +16484,38 @@ Iteration 1 launching findpath with addtional moves: {(28, 46), (27, 43), (29, 4
 Iteration 1 launching findpath with addtional moves: {(28, 46), (26, 39), (29, 45), (22, 49), (23, 48), (21, 50), (20, 48), (24, 47), (25, 46), (27, 38), (19, 50)}
 Iteration 1 launching findpath with addtional moves: {(28, 46), (29, 45), (22, 49), (23, 48), (21, 50), (20, 48), (24, 47), (25, 46), (19, 50), (27, 41)}
 CGGUUUGUGAGUUCUAGUGUGACGGGCGCCUCCAUUGGCGGGGAGUUGUCUCUGGAGUAUAUGCGCGGAC
-..(((((((..((((((......(((((.((((........)))).)))))))))))......))))))) <span class="ansi-yellow-intense-fg">[   0,    0 ]</span> -18.00
-..(((((((..((((((......((((<span class="ansi-yellow-intense-fg ansi-bold">.</span>.((((........)))).<span class="ansi-yellow-intense-fg ansi-bold">.</span>))))))))))......))))))) <span class="ansi-yellow-intense-fg">[ -28,  -47 ]</span> -16.30
+..(((((((..((((((......(((((.((((........)))).)))))))))))......))))))) <span class="ansi-green-intense-fg">[   0,    0 ]</span> -18.00
+..(((((((..((((((......((((<span class="ansi-green-intense-fg ansi-bold">.</span>.((((........)))).<span class="ansi-green-intense-fg ansi-bold">.</span>))))))))))......))))))) <span class="ansi-green-intense-fg">[ -28,  -47 ]</span> -16.30
 ..(((((((..((((((......((((<span class="ansi-red-intense-fg ansi-bold">(</span>.((((........))))<span class="ansi-red-intense-fg ansi-bold">)</span>.))))))))))......))))))) <span class="ansi-red-intense-fg">[  28,   46 ]</span> -14.10
 ..(((((((..((((((......((((<span class="ansi-red-intense-fg ansi-bold">.</span>.((((........))))<span class="ansi-red-intense-fg ansi-bold">.</span>.))))))))))......))))))) <span class="ansi-red-intense-fg">[ -28,  -46 ]</span> -16.30
-..(((((((..((((((......<span class="ansi-yellow-intense-fg ansi-bold">.</span>(((..((((........))))..)))<span class="ansi-yellow-intense-fg ansi-bold">.</span>))))))......))))))) <span class="ansi-yellow-intense-fg">[ -24,  -51 ]</span> -13.80
-..(((((((..((((((.......<span class="ansi-yellow-intense-fg ansi-bold">.</span>((..((((........))))..))<span class="ansi-yellow-intense-fg ansi-bold">.</span>.))))))......))))))) <span class="ansi-yellow-intense-fg">[ -25,  -50 ]</span> -12.00
-..(((((((..((((((........<span class="ansi-yellow-intense-fg ansi-bold">.</span>(..((((........))))..)<span class="ansi-yellow-intense-fg ansi-bold">.</span>..))))))......))))))) <span class="ansi-yellow-intense-fg">[ -26,  -49 ]</span> -10.00
-..(((((((..((((((.........<span class="ansi-yellow-intense-fg ansi-bold">.</span>..((((........))))..<span class="ansi-yellow-intense-fg ansi-bold">.</span>...))))))......))))))) <span class="ansi-yellow-intense-fg">[ -27,  -48 ]</span> -11.10
+..(((((((..((((((......<span class="ansi-green-intense-fg ansi-bold">.</span>(((..((((........))))..)))<span class="ansi-green-intense-fg ansi-bold">.</span>))))))......))))))) <span class="ansi-green-intense-fg">[ -24,  -51 ]</span> -13.80
+..(((((((..((((((.......<span class="ansi-green-intense-fg ansi-bold">.</span>((..((((........))))..))<span class="ansi-green-intense-fg ansi-bold">.</span>.))))))......))))))) <span class="ansi-green-intense-fg">[ -25,  -50 ]</span> -12.00
+..(((((((..((((((........<span class="ansi-green-intense-fg ansi-bold">.</span>(..((((........))))..)<span class="ansi-green-intense-fg ansi-bold">.</span>..))))))......))))))) <span class="ansi-green-intense-fg">[ -26,  -49 ]</span> -10.00
+..(((((((..((((((.........<span class="ansi-green-intense-fg ansi-bold">.</span>..((((........))))..<span class="ansi-green-intense-fg ansi-bold">.</span>...))))))......))))))) <span class="ansi-green-intense-fg">[ -27,  -48 ]</span> -11.10
 ..(((((((..((((((...<span class="ansi-red-intense-fg ansi-bold">(</span>........((((........))))....<span class="ansi-red-intense-fg ansi-bold">)</span>.))))))......))))))) <span class="ansi-red-intense-fg">[  21,   50 ]</span>  -9.20
 ..(((((((..((((((...(<span class="ansi-red-intense-fg ansi-bold">(</span>.......((((........))))...<span class="ansi-red-intense-fg ansi-bold">)</span>).))))))......))))))) <span class="ansi-red-intense-fg">[  22,   49 ]</span> -11.10
 ..(((((((..((((((...((<span class="ansi-red-intense-fg ansi-bold">(</span>......((((........))))..<span class="ansi-red-intense-fg ansi-bold">)</span>)).))))))......))))))) <span class="ansi-red-intense-fg">[  23,   48 ]</span> -14.20
 ..(((((((..((((((...(((<span class="ansi-red-intense-fg ansi-bold">(</span>.....((((........)))).<span class="ansi-red-intense-fg ansi-bold">)</span>))).))))))......))))))) <span class="ansi-red-intense-fg">[  24,   47 ]</span> -15.20
 ..(((((((..((((((...((((<span class="ansi-red-intense-fg ansi-bold">(</span>....((((........))))<span class="ansi-red-intense-fg ansi-bold">)</span>)))).))))))......))))))) <span class="ansi-red-intense-fg">[  25,   46 ]</span> -16.70
-..(((((((..((((((...(((((....<span class="ansi-yellow-intense-fg ansi-bold">.</span>(((........)))<span class="ansi-yellow-intense-fg ansi-bold">.</span>))))).))))))......))))))) <span class="ansi-yellow-intense-fg">[ -30,  -45 ]</span> -12.90
+..(((((((..((((((...(((((....<span class="ansi-green-intense-fg ansi-bold">.</span>(((........)))<span class="ansi-green-intense-fg ansi-bold">.</span>))))).))))))......))))))) <span class="ansi-green-intense-fg">[ -30,  -45 ]</span> -12.90
 ..(((((((..((((((...(((((...<span class="ansi-red-intense-fg ansi-bold">(</span>.(((........)))<span class="ansi-red-intense-fg ansi-bold">)</span>))))).))))))......))))))) <span class="ansi-red-intense-fg">[  29,   45 ]</span> -13.30
 ..(((((((..((((((...(((((...<span class="ansi-red-intense-fg ansi-bold">.</span>.(((........)))<span class="ansi-red-intense-fg ansi-bold">.</span>))))).))))))......))))))) <span class="ansi-red-intense-fg">[ -29,  -45 ]</span> -12.90
-..(((((((..((((((...(((((.....<span class="ansi-yellow-intense-fg ansi-bold">.</span>((........))<span class="ansi-yellow-intense-fg ansi-bold">.</span>.))))).))))))......))))))) <span class="ansi-yellow-intense-fg">[ -31,  -44 ]</span> -11.90
-..(((((((..((((((...(((((......<span class="ansi-yellow-intense-fg ansi-bold">.</span>(........)<span class="ansi-yellow-intense-fg ansi-bold">.</span>..))))).))))))......))))))) <span class="ansi-yellow-intense-fg">[ -32,  -43 ]</span> <span class="ansi-red-intense-fg ansi-bold"> -8.40</span>
-..(((((((..((((((...(((((.......<span class="ansi-yellow-intense-fg ansi-bold">.</span>........<span class="ansi-yellow-intense-fg ansi-bold">.</span>...))))).))))))......))))))) <span class="ansi-yellow-intense-fg">[ -33,  -42 ]</span> -11.00
-..(((((((..((((((...(((((....<span class="ansi-yellow-intense-fg ansi-bold">(</span>......<span class="ansi-yellow-intense-fg ansi-bold">)</span>........))))).))))))......))))))) <span class="ansi-yellow-intense-fg">[  30,   37 ]</span>  -9.00
-..(((((((..((((((...(((((...<span class="ansi-yellow-intense-fg ansi-bold">(</span>(......)<span class="ansi-yellow-intense-fg ansi-bold">)</span>.......))))).))))))......))))))) <span class="ansi-yellow-intense-fg">[  29,   38 ]</span> -12.50
-..(((((((..((((((...(((((..<span class="ansi-yellow-intense-fg ansi-bold">(</span>((......))<span class="ansi-yellow-intense-fg ansi-bold">)</span>......))))).))))))......))))))) <span class="ansi-yellow-intense-fg">[  28,   39 ]</span> -16.10
-..(((((((..((((((...(((((.<span class="ansi-yellow-intense-fg ansi-bold">(</span>(((......)))<span class="ansi-yellow-intense-fg ansi-bold">)</span>.....))))).))))))......))))))) <span class="ansi-yellow-intense-fg">[  27,   40 ]</span> -17.80
+..(((((((..((((((...(((((.....<span class="ansi-green-intense-fg ansi-bold">.</span>((........))<span class="ansi-green-intense-fg ansi-bold">.</span>.))))).))))))......))))))) <span class="ansi-green-intense-fg">[ -31,  -44 ]</span> -11.90
+..(((((((..((((((...(((((......<span class="ansi-green-intense-fg ansi-bold">.</span>(........)<span class="ansi-green-intense-fg ansi-bold">.</span>..))))).))))))......))))))) <span class="ansi-green-intense-fg">[ -32,  -43 ]</span> <span class="ansi-red-intense-fg ansi-bold"> -8.40</span>
+..(((((((..((((((...(((((.......<span class="ansi-green-intense-fg ansi-bold">.</span>........<span class="ansi-green-intense-fg ansi-bold">.</span>...))))).))))))......))))))) <span class="ansi-green-intense-fg">[ -33,  -42 ]</span> -11.00
+..(((((((..((((((...(((((....<span class="ansi-green-intense-fg ansi-bold">(</span>......<span class="ansi-green-intense-fg ansi-bold">)</span>........))))).))))))......))))))) <span class="ansi-green-intense-fg">[  30,   37 ]</span>  -9.00
+..(((((((..((((((...(((((...<span class="ansi-green-intense-fg ansi-bold">(</span>(......)<span class="ansi-green-intense-fg ansi-bold">)</span>.......))))).))))))......))))))) <span class="ansi-green-intense-fg">[  29,   38 ]</span> -12.50
+..(((((((..((((((...(((((..<span class="ansi-green-intense-fg ansi-bold">(</span>((......))<span class="ansi-green-intense-fg ansi-bold">)</span>......))))).))))))......))))))) <span class="ansi-green-intense-fg">[  28,   39 ]</span> -16.10
+..(((((((..((((((...(((((.<span class="ansi-green-intense-fg ansi-bold">(</span>(((......)))<span class="ansi-green-intense-fg ansi-bold">)</span>.....))))).))))))......))))))) <span class="ansi-green-intense-fg">[  27,   40 ]</span> -17.80
 ..(((((((..((((((...((((<span class="ansi-red-intense-fg ansi-bold">.</span>.((((......)))).....<span class="ansi-red-intense-fg ansi-bold">.</span>)))).))))))......))))))) <span class="ansi-red-intense-fg">[ -25,  -46 ]</span> -18.00
 ..(((((((..((((((...(((<span class="ansi-red-intense-fg ansi-bold">.</span>..((((......))))......<span class="ansi-red-intense-fg ansi-bold">.</span>))).))))))......))))))) <span class="ansi-red-intense-fg">[ -24,  -47 ]</span> -17.10
 ..(((((((..((((((...((<span class="ansi-red-intense-fg ansi-bold">.</span>...((((......)))).......<span class="ansi-red-intense-fg ansi-bold">.</span>)).))))))......))))))) <span class="ansi-red-intense-fg">[ -23,  -48 ]</span> -14.00
 ..(((((((..((((((...(<span class="ansi-red-intense-fg ansi-bold">.</span>....((((......))))........<span class="ansi-red-intense-fg ansi-bold">.</span>).))))))......))))))) <span class="ansi-red-intense-fg">[ -22,  -49 ]</span> -12.10
 ..(((((((..((((((...<span class="ansi-red-intense-fg ansi-bold">.</span>.....((((......)))).........<span class="ansi-red-intense-fg ansi-bold">.</span>.))))))......))))))) <span class="ansi-red-intense-fg">[ -21,  -50 ]</span> -15.80
-..(((((((..((((((.....<span class="ansi-yellow-intense-fg ansi-bold">(</span>...((((......))))....<span class="ansi-yellow-intense-fg ansi-bold">)</span>......))))))......))))))) <span class="ansi-yellow-intense-fg">[  23,   45 ]</span> -15.40
-..(((((((..((((((....<span class="ansi-yellow-intense-fg ansi-bold">(</span>(...((((......))))....)<span class="ansi-yellow-intense-fg ansi-bold">)</span>.....))))))......))))))) <span class="ansi-yellow-intense-fg">[  22,   46 ]</span> -17.10
-..(((((((..((((((...<span class="ansi-yellow-intense-fg ansi-bold">(</span>((...((((......))))....))<span class="ansi-yellow-intense-fg ansi-bold">)</span>....))))))......))))))) <span class="ansi-yellow-intense-fg">[  21,   47 ]</span> -18.70
+..(((((((..((((((.....<span class="ansi-green-intense-fg ansi-bold">(</span>...((((......))))....<span class="ansi-green-intense-fg ansi-bold">)</span>......))))))......))))))) <span class="ansi-green-intense-fg">[  23,   45 ]</span> -15.40
+..(((((((..((((((....<span class="ansi-green-intense-fg ansi-bold">(</span>(...((((......))))....)<span class="ansi-green-intense-fg ansi-bold">)</span>.....))))))......))))))) <span class="ansi-green-intense-fg">[  22,   46 ]</span> -17.10
+..(((((((..((((((...<span class="ansi-green-intense-fg ansi-bold">(</span>((...((((......))))....))<span class="ansi-green-intense-fg ansi-bold">)</span>....))))))......))))))) <span class="ansi-green-intense-fg">[  21,   47 ]</span> -18.70
 S:  -8.40 kcal/mol | B:   9.60 kcal/mol | E[start]:-18.00 E[end]:-18.70
-</pre>
-</div>
-</div>
-
-</div>
-
-</div>
-
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-
-<pre><code>GGAAGCCGGCGAGGCAGUACCAUUAUAUAGUUUGUCUUCCAAGAAUGGGUACGACCGCGGGACCGUUCGGUUAUCGUCUG
-((.((((((((.((..((((((((....((.....))......))))).)))..)).)).......)))))).))..... (-16.30) L0004
-((.(((((.((.((..((((((((....((.....))......))))).)))..)).))........))))).))..... (-14.50) I    
-((.((((..((.((..((((((((....((.....))......))))).)))..)).)).........)))).))..... (-12.90) S    
-((.((((((((.((..((((((((....((.....))......))))).)))..)).))...))....)))).))..... (-14.00) I    
-...((((((((.((..((((((((....((.....))......))))).)))..)).))...))....))))........ (-13.20) I    
-....(((((((.((..((((((((....((.....))......))))).)))..)).))...))....)))......... (-12.30) I    
-.....((((((.((..((((((((....((.....))......))))).)))..)).))...))....)).......... (-10.70) S    
-.......((((.((..((((((((....((.....))......))))).)))..)).))...))................ (-11.40) I    
-......(((((.((..((((((((....((.....))......))))).)))..)).))...)))............... (-13.30) I    
-.((...(((((.((..((((((((....((.....))......))))).)))..)).))...))).))............ (-13.30) I    
-.(((..(((((.((..((((((((....((.....))......))))).)))..)).))...))))))............ (-13.90) I    
-.((...(((((.((..((((((((....((.....))......))))).)))..)).))...))).))............ (-13.30) I    
-......(((((.((..((((((((....((.....))......))))).)))..)).))...)))............... (-13.30) I    
-.......((((.((..((((((((....((.....))......))))).)))..)).))...))................ (-11.40) I    
-.........((.((..((((((((....((.....))......))))).)))..)).))..................... (-11.20) S    
-.....((..((.((..((((((((....((.....))......))))).)))..)).))))................... (-11.60) I    
-((...((..((.((..((((((((....((.....))......))))).)))..)).)))).))................ (-13.00) I    
-((...((.....((..((((((((....((.....))......))))).)))..))...)).))................ (-11.80) S    
-((...((.((..((..((((((((....((.....))......))))).)))..)))).)).))................ (-15.30) L0038
-.....((.((..((..((((((((....((.....))......))))).)))..)))).))................... (-13.90) S    
-.....((.((..((..((((((((....((.....))......))))).)))..)))).)).((....)).......... (-14.20) I    
-.....((.((..((..((((((((....((.....))......))))).)))..)))).))(((....)))......... (-15.50) L0031
-.....((.....((..((((((((....((.....))......))))).)))..))...))(((....)))......... (-12.00) S    
-.....((..((.((..((((((((....((.....))......))))).)))..)).))))(((....)))......... (-13.20) I    
-.........((.((..((((((((....((.....))......))))).)))..)).))..(((....)))......... (-12.80) S    
-.........((.((..((((((((....((.....))......))))).)))..)).)).((((....))))........ (-14.50) I    
-............((..((((((((....((.....))......))))).)))..))....((((....))))........ (-12.00) S    
-............((..((((((((....((.....))......))))).)))..)).((.((((....))))..)).... (-13.00) I    
-............((..((((((((....((.....))......))))).)))..))(((.((((....))))..)))... (-14.50) I    
-............((..((((((((....((.....))......))))).)))..))((((((((....)))).))))... (-14.60) I    
-................((((((((....((.....))......))))).)))....((((((((....)))).))))... (-10.90) S    
-.....((.....))..((((((((....((.....))......))))).)))....((((((((....)))).))))... (-11.90) I    
-....(((.....))).((((((((....((.....))......))))).)))....((((((((....)))).))))... (-15.70) L0020
-....(((.....))).((.(((((....((.....))......)))))..))....((((((((....)))).))))... (-14.10) I    
-....(((.....)))....(((((....((.....))......)))))........((((((((....)))).))))... (-14.00) I    
-....(((.....)))....(((((...................)))))........((((((((....)))).))))... (-13.00) I    
-....(((.....)))....((((.....................))))........((((((((....)))).))))... (-11.70) I    
-....(((.....)))....(((.......................)))........((((((((....)))).))))... (-10.40) I    
-....(((.....)))....((.........................))........((((((((....)))).))))... ( -9.60) S    
-....(((.....))).........................................((((((((....)))).))))... (-10.70) I    
-....(((.....)))...............................((......))((((((((....)))).))))... (-12.60) I    
-((..(((.....)))....)).........................((......))((((((((....)))).))))... (-12.90) I    
-....(((.....)))...............................((......))((((((((....)))).))))... (-12.60) I    
-....(((.....))).............((.....)).........((......))((((((((....)))).))))... (-10.60) I    
-((..(((.....))).............((.....)).))......((......))((((((((....)))).))))... (-10.50) S    
-(((.(((.....))).............((.....)))))......((......))((((((((....)))).))))... (-11.90) I    
-(((.(((.....)))......................)))......((......))((((((((....)))).))))... (-11.40) S    
-(((.(((.....))).....((..........))...)))......((......))((((((((....)))).))))... (-11.70) I    
-(((((((.....))).....((..........))..))))......((......))((((((((....)))).))))... (-12.60) I    
-(((((((.....))).....................))))......((......))((((((((....)))).))))... (-13.20) I    
-(((((((.....))).((........))........))))......((......))((((((((....)))).))))... (-11.50) S    
-(((((((.....))).(((......)))........))))......((......))((((((((....)))).))))... (-12.70) I    
-((((.((.....))..(((......)))........))))......((......))((((((((....)))).))))... ( -8.90) S    
-(((((((.....))..(((......))).......)))))......((......))((((((((....)))).))))... (-11.00) I    
-(((((((.....))..((........)).......)))))......((......))((((((((....)))).))))... ( -9.80) S    
-(((((((.....)).....................)))))......((......))((((((((....)))).))))... (-12.40) I    
-(((((..............................)))))......((......))((((((((....)))).))))... (-11.00) I    
-(((((........((..................)))))))......((......))((((((((....)))).))))... ( -9.90) S    
-(((((........(((................))))))))......((......))((((((((....)))).))))... (-11.10) I    
-(((((........((((..............)))))))))......((......))((((((((....)))).))))... (-12.30) I    
-(((((........((((.((.........)))))))))))......((......))((((((((....)))).))))... (-12.50) I    
-((((.........((((.((.........)))))).))))......((......))((((((((....)))).))))... ( -8.70) S    
-((((........(((((.((.........)))))))))))......((......))((((((((....)))).))))... (-11.90) I    
-(((.........(((((.((.........))))))).)))......((......))((((((((....)))).))))... (-10.00) S    
-(((........((((((.((.........)))))))))))......((......))((((((((....)))).))))... (-12.60) I    
-((.........((((((.((.........)))))))).))......((......))((((((((....)))).))))... ( -9.70) S    
-((........(((((((.((.........)))))))))))......((......))((((((((....)))).))))... (-12.00) I    
-..........(((((((.((.........)))))))))........((......))((((((((....)))).))))... (-12.30) I    
-.......((.(((((((.((.........)))))))))))......((......))((((((((....)))).))))... (-14.70) I    
-.......((.(((((((.((.........))))))))))).....(((......)))(((((((....)))).))).... (-13.20) S    
-.......((.(((((((.((.........))))))))))).....(((......)))((.((((....))))..)).... (-13.10) I    
-.......((.(((((((.((.........))))))))))).....(((......)))...((((....))))........ (-12.10) I    
-.......((.(((((((.((.........))))))))))).....(((......)))....(((....)))......... (-10.40) I    
-.......((.(((((((.((.........))))))))))).....(((......))).....((....)).......... ( -9.10) I    
-.......((.(((((((.((.........))))))))))).....(((......)))....................... ( -8.80) I    
-.......((.(((((((.((.........))))))))))).....(((......)))((....))............... ( -8.20) S    
-.......((.(((((((.((.........)))))))))))......((......))(((....))).............. ( -9.70) I    
-.....((((.(((((((.((.........)))))))))))......((......))(((....)))..)).......... ( -9.90) I    
-....(((((.(((((((.((.........)))))))))))......((......))(((....)))..)))......... (-11.50) I    
-...((((((.(((((((.((.........)))))))))))......((......))(((....)))..))))........ (-12.40) I    
-((.((((((.(((((((.((.........)))))))))))......((......))(((....)))..)))).))..... (-13.20) I    
-((.((((...(((((((.((.........)))))))))........((......))(((....)))..)))).))..... (-10.80) S    
-((.(((((..(((((((.((.........)))))))))........((......))(((....))).))))).))..... (-13.20) I    
-((.((((((.(((((((.((.........)))))))))........((......))(((....))))))))).))..... (-13.40) I    
-((.((((((.(((((((.((.........)))))))))..................(((....))))))))).))..... (-10.60) S    
-((.((((((.(((((((.((.........)))))))))((......))........(((....))))))))).))..... (-12.40) I    
-((.((((((.(((((((.((.........)))))))))(((....)))........(((....))))))))).))..... (-13.10) I    
-((.((((((.(((((((.((.........)))))))))(((....))).........((....)).)))))).))..... (-11.60) I    
-((.((((((.(((((((.((.........)))))))))(((....)))..................)))))).))..... (-11.30) S    
-((.((((((.(((((((.((.........)))))))))(((....)))...((....)).......)))))).))..... (-11.90) I    
-((.(((((..(((((((.((.........)))))))))(((....)))...((....))........))))).))..... (-11.70) S    
-((.((((((((((((((.((.........)))))))))(((....)))...((....)).....)).))))).))..... (-11.90) I    
-((.((((((((((((((.((.........)))))))))((......))...((....)).....)).))))).))..... (-11.20) I    
-((.((((((((((((((.((.........))))))))).............((....)).....)).))))).))..... ( -9.40) S    
-((.((((((((((((((.((.........))))))))).........((..((....))...)))).))))).))..... (-11.30) I    
-((.((((((((((((((.((.........))))))))).........(((.((....))..))))).))))).))..... (-13.00) I    
-((.(((((..(((((((.((.........))))))))).........(((.((....))..)))...))))).))..... (-12.80) I    
-((.((((...(((((((.((.........))))))))).........(((.((....))..)))....)))).))..... (-10.40) S    
-((.((((((.(((((((.((.........))))))))))).......(((.((....))..)))....)))).))..... (-12.80) I    
-((.((((((.(((((((.((.........)))))))))))..((...(((.((....))..)))..)))))).))..... (-12.40) S    
-((.((((((.(((((((.((.........)))))))))))..(((..(((.((....))..))).))))))).))..... (-14.00) I    
-((.((((((.(((((((.((.........)))))))))))..((((.(((.((....))..))))))))))).))..... (-14.90) I    
-((.((((((.(((((((.((.........)))))))))))..((((.((..((....))...)))))))))).))..... (-13.20) I    
-((.((((((.(((((((.((.........)))))))))))..((((.....((....)).....)))))))).))..... (-11.50) S    
-((.((((((.(((((((.((.........)))))))))))..(((((....((....))....))))))))).))..... (-13.80) I    
-((.((((((.(((((((.((.........)))))))))))..((((((...((....))...)))))))))).))..... (-18.40) L0001</code></pre>
-
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[40]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sequence</span> <span class="o">=</span> <span class="s2">&quot;GGAAGCCGGCGAGGCAGUACCAUUAUAUAGUUUGUCUUCCAAGAAUGGGUACGACCGCGGGACCGUUCGGUUAUCGUCUG&quot;</span>
-<span class="n">s1</span> <span class="o">=</span> <span class="s2">&quot;((.((((((((.((..((((((((....((.....))......))))).)))..)).)).......)))))).)).....&quot;</span>
-<span class="n">s2</span> <span class="o">=</span> <span class="s2">&quot;((.((((((.(((((((.((.........)))))))))))..((((((...((....))...)))))))))).)).....&quot;</span>
-
-
-<span class="n">add_moves</span><span class="o">=</span><span class="p">[]</span>
-<span class="n">section</span> <span class="o">=</span> <span class="p">()</span>
-<span class="n">search_width</span> <span class="o">=</span> <span class="mi">500</span>
-<span class="n">Verbose</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="c1"># Debug = True</span>
-<span class="n">Debug</span> <span class="o">=</span> <span class="kc">False</span>
-
-<span class="n">indirect_iterations</span> <span class="o">=</span> <span class="mi">2</span>
-
-<span class="n">paths</span> <span class="o">=</span> <span class="n">pathfinder_i_2</span><span class="o">.</span><span class="n">find_path</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="n">indirect_iterations</span><span class="o">=</span><span class="n">indirect_iterations</span><span class="p">,</span> <span class="n">add_moves</span><span class="o">=</span><span class="n">add_moves</span><span class="p">,</span>
-<span class="n">search_width</span><span class="o">=</span><span class="n">search_width</span><span class="p">,</span> <span class="n">Debug</span><span class="o">=</span><span class="n">Debug</span><span class="p">,</span> <span class="n">Verbose</span><span class="o">=</span><span class="n">Verbose</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-<div class="jp-Cell-outputWrapper">
-
-
-<div class="jp-OutputArea jp-Cell-outputArea">
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-
-
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>Iteration 0 launching findpath with addtional moves: set()
-New best result:  -0.90 kcal/mol | B:  15.40 kcal/mol | E[start]:-16.30 E[end]:-18.40 | additional moves: []
-call find_stack for best path
-common:
-((.((((.............................................................)))).)).....
-saddle structure: [0, 75, 74, 0, 72, 71, 70, 69, 68, 67, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 45, 44, 0, 0, 0, 0, 37, 36, 0, 0, 0, 0, 0, 30, 29, 0, 0, 0, 0, 0, 0, 24, 23, 22, 0, 63, 0, 0, 0, 59, 58, 0, 0, 0, 0, 53, 52, 0, 0, 0, 48, 0, 0, 0, 9, 8, 7, 6, 5, 4, 0, 2, 1, 0, 0, 0, 0, 0]
-((.((((((............(((....((.....))......))).(...((....))...)...)))))).)).....
-s1s2
-((.((((((((.((..((((((((....((.....))......))))).)))..)).)).......)))))).)).....
-((.((((((.(((((((.((.........)))))))))))..((((((...((....))...)))))))))).)).....
-bfs done
-((.((((((....((.((....((((..................)))).....)).))....))....)))).))..... -3.8599999999999994 -4.6 [(8, 64), (9, 63), (14, 58), (15, 57), (17, 55), (18, 54), (23, 48), (24, 47), (25, 46), (26, 45)]
-((.((((.(((..((.((...................................)).)).....)))..)))).))..... -3.7 -4.44 [(9, 66), (10, 65), (11, 64), (14, 58), (15, 57), (17, 55), (18, 54)]
-((.((((.(((..((.((.......(((................)))......)).)).....)))..)))).))..... -3.66 -4.4 [(9, 66), (10, 65), (11, 64), (14, 58), (15, 57), (17, 55), (18, 54), (26, 47), (27, 46), (28, 45)]
-((.((((.....((.....((.............(((....)))..............))..))....)))).))..... -3.66 -4.4 [(13, 64), (14, 63), (20, 60), (21, 59), (35, 44), (36, 43), (37, 42)]
-((.((((.(((..((.((...(((.......................)))...)).)).....)))..)))).))..... -3.5599999999999996 -4.3 [(9, 66), (10, 65), (11, 64), (14, 58), (15, 57), (17, 55), (18, 54), (22, 50), (23, 49), (24, 48)]
-((.((((.(((..((.((............((.(....).))...........)).)).....)))..)))).))..... -3.16 -3.9 [(9, 66), (10, 65), (11, 64), (14, 58), (15, 57), (17, 55), (18, 54), (31, 42), (32, 41), (34, 39)]
-((.((((((....((.((.......(((................)))......)).))....))....)))).))..... -3.0599999999999996 -3.8 [(8, 64), (9, 63), (14, 58), (15, 57), (17, 55), (18, 54), (26, 47), (27, 46), (28, 45)]
-((.((((.(((..((.((.(................................))).)).....)))..)))).))..... -3.0 -3.74 [(9, 66), (10, 65), (11, 64), (14, 58), (15, 57), (17, 55), (18, 54), (20, 53)]
-((.((((((....((.((...(((.......................)))...)).))....))....)))).))..... -2.96 -3.7 [(8, 64), (9, 63), (14, 58), (15, 57), (17, 55), (18, 54), (22, 50), (23, 49), (24, 48)]
-((.((((.(((..((.((....(((....................))).....)).)).....)))..)))).))..... -2.8600000000000003 -3.6 [(9, 66), (10, 65), (11, 64), (14, 58), (15, 57), (17, 55), (18, 54), (23, 48), (24, 47), (25, 46)]
-((.((((.(((.(.................................................))))..)))).))..... -2.6399999999999997 -3.38 [(9, 66), (10, 65), (11, 64), (13, 63)]
-((.((((((....((.((............((.(....).))...........)).))....))....)))).))..... -2.5599999999999996 -3.3 [(8, 64), (9, 63), (14, 58), (15, 57), (17, 55), (18, 54), (31, 42), (32, 41), (34, 39)]
-((.((((.(((.(...((......................................))....))))..)))).))..... -2.51 -3.25 [(9, 66), (10, 65), (11, 64), (13, 63), (17, 58), (18, 57)]
-((.((((((....((.((.(................................))).))....))....)))).))..... -2.4000000000000004 -3.14 [(8, 64), (9, 63), (14, 58), (15, 57), (17, 55), (18, 54), (20, 53)]
-((.((((((....((.((.......(((.....(....).....)))......)).))....))....)))).))..... -2.3600000000000003 -3.1 [(8, 64), (9, 63), (14, 58), (15, 57), (17, 55), (18, 54), (26, 47), (27, 46), (28, 45), (34, 39)]
-((.((((((....((.((.......(((..(..........)..)))......)).))....))....)))).))..... -2.26 -3.0 [(8, 64), (9, 63), (14, 58), (15, 57), (17, 55), (18, 54), (26, 47), (27, 46), (28, 45), (31, 42)]
-((.((((.(((...(.((......................................)).)...)))..)))).))..... -2.21 -2.95 [(9, 66), (10, 65), (11, 64), (15, 60), (17, 58), (18, 57)]
-((.((((((....((.((...(((.........(....)........)))...)).))....))....)))).))..... -2.16 -2.9 [(8, 64), (9, 63), (14, 58), (15, 57), (17, 55), (18, 54), (22, 50), (23, 49), (24, 48), (34, 39)]
-((.((((.(((..((.((.(..........((........))..........))).)).....)))..)))).))..... -2.16 -2.9 [(9, 66), (10, 65), (11, 64), (14, 58), (15, 57), (17, 55), (18, 54), (20, 53), (31, 42), (32, 41)]
-((.((((.(((..((.((.(.............(....).............))).)).....)))..)))).))..... -2.16 -2.9 [(9, 66), (10, 65), (11, 64), (14, 58), (15, 57), (17, 55), (18, 54), (20, 53), (34, 39)]
-((.((((.(((..((.((...........(........)..............)).)).....)))..)))).))..... -1.9600000000000002 -2.7 [(9, 66), (10, 65), (11, 64), (14, 58), (15, 57), (17, 55), (18, 54), (30, 39)]
-((.((((.(((..((.((............((.(.....)))...........)).)).....)))..)))).))..... -1.9600000000000002 -2.7 [(9, 66), (10, 65), (11, 64), (14, 58), (15, 57), (17, 55), (18, 54), (31, 42), (32, 41), (34, 40)]
-((.((((.(((..((.((..(...........................)....)).)).....)))..)))).))..... -1.86 -2.6 [(9, 66), (10, 65), (11, 64), (14, 58), (15, 57), (17, 55), (18, 54), (21, 49)]
-Iteration 1 launching findpath with addtional moves: {(17, 55), (23, 48), (18, 54), (8, 64), (14, 58), (9, 63), (26, 45), (24, 47), (25, 46), (15, 57)}
-Iteration 1 launching findpath with addtional moves: {(9, 66), (14, 58), (18, 54), (17, 55), (11, 64), (15, 57), (10, 65)}
-New best result:  -2.80 kcal/mol | B:  13.50 kcal/mol | E[start]:-16.30 E[end]:-18.40 | additional moves: [(10, 65), (11, 64), (14, 58), (15, 57)]
-Iteration 1 launching findpath with addtional moves: {(17, 55), (27, 46), (28, 45), (11, 64), (10, 65), (9, 66), (14, 58), (18, 54), (15, 57), (26, 47)}
-Iteration 1 launching findpath with addtional moves: {(37, 42), (36, 43), (11, 64), (10, 65), (13, 64), (14, 58), (35, 44), (21, 59), (15, 57), (14, 63), (20, 60)}
-Iteration 1 launching findpath with addtional moves: {(23, 49), (22, 50), (17, 55), (11, 64), (10, 65), (9, 66), (14, 58), (18, 54), (24, 48), (15, 57)}
-Iteration 1 launching findpath with addtional moves: {(17, 55), (11, 64), (34, 39), (31, 42), (10, 65), (9, 66), (14, 58), (18, 54), (15, 57), (32, 41)}
-Iteration 1 launching findpath with addtional moves: {(17, 55), (27, 46), (28, 45), (11, 64), (10, 65), (18, 54), (14, 58), (8, 64), (9, 63), (15, 57), (26, 47)}
-New best result:  -2.80 kcal/mol | B:  13.50 kcal/mol | E[start]:-16.30 E[end]:-18.40 | additional moves: [(10, 65), (11, 64), (14, 58)]
-Iteration 1 launching findpath with addtional moves: {(20, 53), (17, 55), (11, 64), (10, 65), (9, 66), (14, 58), (18, 54), (15, 57)}
-Iteration 1 launching findpath with addtional moves: {(23, 49), (22, 50), (17, 55), (11, 64), (10, 65), (18, 54), (14, 58), (8, 64), (9, 63), (24, 48), (15, 57)}
-Iteration 1 launching findpath with addtional moves: {(17, 55), (11, 64), (23, 48), (10, 65), (9, 66), (14, 58), (18, 54), (24, 47), (25, 46), (15, 57)}
-Iteration 1 launching findpath with addtional moves: {(9, 66), (14, 58), (13, 63), (11, 64), (10, 65)}
-Iteration 1 launching findpath with addtional moves: {(17, 55), (11, 64), (34, 39), (31, 42), (10, 65), (18, 54), (14, 58), (8, 64), (9, 63), (15, 57), (32, 41)}
-Iteration 1 launching findpath with addtional moves: {(11, 64), (17, 58), (10, 65), (9, 66), (14, 58), (18, 57), (13, 63)}
-Iteration 1 launching findpath with addtional moves: {(20, 53), (17, 55), (11, 64), (10, 65), (18, 54), (14, 58), (8, 64), (9, 63), (15, 57)}
-Iteration 1 launching findpath with addtional moves: {(17, 55), (27, 46), (28, 45), (11, 64), (34, 39), (10, 65), (18, 54), (14, 58), (8, 64), (9, 63), (15, 57), (26, 47)}
-Iteration 1 launching findpath with addtional moves: {(17, 55), (27, 46), (28, 45), (11, 64), (31, 42), (10, 65), (18, 54), (14, 58), (8, 64), (9, 63), (15, 57), (26, 47)}
-Iteration 1 launching findpath with addtional moves: {(11, 64), (17, 58), (10, 65), (9, 66), (14, 58), (18, 57), (15, 60)}
-Iteration 1 launching findpath with addtional moves: {(23, 49), (22, 50), (17, 55), (11, 64), (34, 39), (10, 65), (18, 54), (14, 58), (8, 64), (9, 63), (24, 48), (15, 57)}
-Iteration 1 launching findpath with addtional moves: {(20, 53), (17, 55), (11, 64), (31, 42), (10, 65), (9, 66), (14, 58), (18, 54), (15, 57), (32, 41)}
-Iteration 1 launching findpath with addtional moves: {(20, 53), (17, 55), (11, 64), (34, 39), (10, 65), (9, 66), (14, 58), (18, 54), (15, 57)}
-Iteration 1 launching findpath with addtional moves: {(17, 55), (11, 64), (30, 39), (10, 65), (9, 66), (14, 58), (18, 54), (15, 57)}
-Iteration 1 launching findpath with addtional moves: {(17, 55), (11, 64), (31, 42), (10, 65), (9, 66), (14, 58), (18, 54), (15, 57), (34, 40), (32, 41)}
-Iteration 1 launching findpath with addtional moves: {(17, 55), (11, 64), (10, 65), (9, 66), (14, 58), (18, 54), (21, 49), (15, 57)}
-Iteration 1 launching findpath with addtional moves: {(14, 58), (58, 65), (59, 64), (11, 64), (57, 66), (10, 65)}
-Iteration 1 launching findpath with addtional moves: {(14, 58), (13, 63), (11, 64), (10, 65)}
-New best result:  -2.80 kcal/mol | B:  13.50 kcal/mol | E[start]:-16.30 E[end]:-18.40 | additional moves: [(10, 65), (11, 64)]
-Iteration 1 launching findpath with addtional moves: {(14, 58), (11, 64), (15, 57), (10, 65)}
-Iteration 1 launching findpath with addtional moves: {(50, 57), (49, 58), (11, 64), (10, 65)}
-Iteration 1 launching findpath with addtional moves: {(11, 64), (10, 65)}
-Iteration 1 launching findpath with addtional moves: {(49, 63), (50, 62), (48, 64), (11, 64), (10, 65)}
-New best result:  -4.00 kcal/mol | B:  12.30 kcal/mol | E[start]:-16.30 E[end]:-18.40 | additional moves: [(49, 63), (50, 62), (48, 64)]
-Iteration 1 launching findpath with addtional moves: {(49, 63), (50, 62), (48, 64), (11, 64), (14, 20), (13, 21), (10, 65)}
-Iteration 1 launching findpath with addtional moves: {(49, 63), (50, 62), (48, 64), (14, 20), (13, 21), (10, 65)}
-Iteration 1 launching findpath with addtional moves: {(49, 63), (50, 62), (48, 64), (14, 20), (13, 21)}
-Iteration 1 launching findpath with addtional moves: {(20, 34), (50, 62), (17, 36), (14, 39), (19, 35), (49, 63), (48, 64), (16, 37), (13, 40)}
-Iteration 1 launching findpath with addtional moves: {(19, 24), (50, 62), (10, 34), (9, 35), (17, 26), (12, 32), (49, 63), (48, 64), (18, 25), (13, 31), (11, 33)}
-Iteration 1 launching findpath with addtional moves: {(50, 62), (11, 36), (14, 33), (12, 35), (18, 29), (49, 63), (16, 31), (48, 64), (19, 28)}
-Iteration 1 launching findpath with addtional moves: {(12, 38), (49, 63), (50, 62), (13, 37), (48, 64), (14, 36)}
-GGAAGCCGGCGAGGCAGUACCAUUAUAUAGUUUGUCUUCCAAGAAUGGGUACGACCGCGGGACCGUUCGGUUAUCGUCUG
-((.((((((((.((..((((((((....((.....))......))))).)))..)).)).......)))))).))..... <span class="ansi-yellow-intense-fg">[   0,    0 ]</span> -16.30
-((.(((((((<span class="ansi-yellow-intense-fg ansi-bold">.</span>.((..((((((((....((.....))......))))).)))..)).<span class="ansi-yellow-intense-fg ansi-bold">.</span>).......)))))).))..... <span class="ansi-yellow-intense-fg">[ -11,  -58 ]</span> -13.20
-((.((((((<span class="ansi-yellow-intense-fg ansi-bold">.</span>..((..((((((((....((.....))......))))).)))..))..<span class="ansi-yellow-intense-fg ansi-bold">.</span>.......)))))).))..... <span class="ansi-yellow-intense-fg">[ -10,  -59 ]</span> -13.40
-((.((((((...<span class="ansi-yellow-intense-fg ansi-bold">.</span>(..((((((((....((.....))......))))).)))..)<span class="ansi-yellow-intense-fg ansi-bold">.</span>..........)))))).))..... <span class="ansi-yellow-intense-fg">[ -13,  -56 ]</span>  -9.00
-((.((((((....<span class="ansi-yellow-intense-fg ansi-bold">.</span>..((((((((....((.....))......))))).)))..<span class="ansi-yellow-intense-fg ansi-bold">.</span>...........)))))).))..... <span class="ansi-yellow-intense-fg">[ -14,  -55 ]</span>  -9.20
-((.((((((.......((<span class="ansi-yellow-intense-fg ansi-bold">.</span>(((((....((.....))......))))).<span class="ansi-yellow-intense-fg ansi-bold">.</span>))..............)))))).))..... <span class="ansi-yellow-intense-fg">[ -19,  -50 ]</span>  -7.60
-((.((((((.......(<span class="ansi-yellow-intense-fg ansi-bold">.</span>.(((((....((.....))......)))))..<span class="ansi-yellow-intense-fg ansi-bold">.</span>)..............)))))).))..... <span class="ansi-yellow-intense-fg">[ -18,  -51 ]</span>  -5.90
-((.((((((.......<span class="ansi-yellow-intense-fg ansi-bold">.</span>..(((((....((.....))......)))))...<span class="ansi-yellow-intense-fg ansi-bold">.</span>..............)))))).))..... <span class="ansi-yellow-intense-fg">[ -17,  -52 ]</span>  -7.00
-((.((((((..........(((((....((.....))......)))))...<span class="ansi-yellow-intense-fg ansi-bold">(</span>......<span class="ansi-yellow-intense-fg ansi-bold">)</span>.......)))))).))..... <span class="ansi-yellow-intense-fg">[  52,   59 ]</span>  -6.20
-((.((((((..........(((((....((.....))......)))))...(<span class="ansi-yellow-intense-fg ansi-bold">(</span>....<span class="ansi-yellow-intense-fg ansi-bold">)</span>).......)))))).))..... <span class="ansi-yellow-intense-fg">[  53,   58 ]</span>  -8.20
-((.((((((..........(((((....((.....))......)))))<span class="ansi-red-intense-fg ansi-bold">(</span>..((....))...<span class="ansi-red-intense-fg ansi-bold">)</span>...)))))).))..... <span class="ansi-red-intense-fg">[  49,   63 ]</span>  -6.20
-((.((((((..........(((((....((.....))......)))))(<span class="ansi-red-intense-fg ansi-bold">(</span>.((....))..<span class="ansi-red-intense-fg ansi-bold">)</span>)...)))))).))..... <span class="ansi-red-intense-fg">[  50,   62 ]</span>  -7.90
-((.((((((..........<span class="ansi-yellow-intense-fg ansi-bold">.</span>((((....((.....))......))))<span class="ansi-yellow-intense-fg ansi-bold">.</span>((.((....))..))...)))))).))..... <span class="ansi-yellow-intense-fg">[ -20,  -48 ]</span>  -4.50
-((.((((((...........((((....((.....))......))))<span class="ansi-red-intense-fg ansi-bold">(</span>((.((....))..))<span class="ansi-red-intense-fg ansi-bold">)</span>..)))))).))..... <span class="ansi-red-intense-fg">[  48,   64 ]</span>  -8.40
-((.((((((...........((((....<span class="ansi-yellow-intense-fg ansi-bold">.</span>(.....)<span class="ansi-yellow-intense-fg ansi-bold">.</span>......))))(((.((....))..)))..)))))).))..... <span class="ansi-yellow-intense-fg">[ -29,  -37 ]</span>  -6.20
-((.((((((...........((((.....<span class="ansi-yellow-intense-fg ansi-bold">.</span>.....<span class="ansi-yellow-intense-fg ansi-bold">.</span>.......))))(((.((....))..)))..)))))).))..... <span class="ansi-yellow-intense-fg">[ -30,  -36 ]</span>  -7.40
-((.((((((...........(((<span class="ansi-yellow-intense-fg ansi-bold">.</span>...................<span class="ansi-yellow-intense-fg ansi-bold">.</span>)))(((.((....))..)))..)))))).))..... <span class="ansi-yellow-intense-fg">[ -24,  -44 ]</span>  -6.10
-((.((((((...........((<span class="ansi-yellow-intense-fg ansi-bold">.</span>.....................<span class="ansi-yellow-intense-fg ansi-bold">.</span>))(((.((....))..)))..)))))).))..... <span class="ansi-yellow-intense-fg">[ -23,  -45 ]</span>  -4.80
-((.((((((...........(<span class="ansi-yellow-intense-fg ansi-bold">.</span>.......................<span class="ansi-yellow-intense-fg ansi-bold">.</span>)(((.((....))..)))..)))))).))..... <span class="ansi-yellow-intense-fg">[ -22,  -46 ]</span> <span class="ansi-red-intense-fg ansi-bold"> -4.00</span>
-((.((((((...........<span class="ansi-yellow-intense-fg ansi-bold">.</span>.........................<span class="ansi-yellow-intense-fg ansi-bold">.</span>(((.((....))..)))..)))))).))..... <span class="ansi-yellow-intense-fg">[ -21,  -47 ]</span>  -6.59
-((.((((((.....<span class="ansi-yellow-intense-fg ansi-bold">(</span>..................<span class="ansi-yellow-intense-fg ansi-bold">)</span>.............(((.((....))..)))..)))))).))..... <span class="ansi-yellow-intense-fg">[  15,   34 ]</span> <span class="ansi-red-intense-fg ansi-bold"> -4.00</span>
-((.((((((....<span class="ansi-yellow-intense-fg ansi-bold">(</span>(..................)<span class="ansi-yellow-intense-fg ansi-bold">)</span>............(((.((....))..)))..)))))).))..... <span class="ansi-yellow-intense-fg">[  14,   35 ]</span>  -5.60
-((.((((((...<span class="ansi-yellow-intense-fg ansi-bold">(</span>((..................))<span class="ansi-yellow-intense-fg ansi-bold">)</span>...........(((.((....))..)))..)))))).))..... <span class="ansi-yellow-intense-fg">[  13,   36 ]</span>  -7.90
-((.((((((..<span class="ansi-yellow-intense-fg ansi-bold">(</span>(((..................)))<span class="ansi-yellow-intense-fg ansi-bold">)</span>..........(((.((....))..)))..)))))).))..... <span class="ansi-yellow-intense-fg">[  12,   37 ]</span>  -9.20
-((.((((((..((((<span class="ansi-yellow-intense-fg ansi-bold">(</span>................<span class="ansi-yellow-intense-fg ansi-bold">)</span>))))..........(((.((....))..)))..)))))).))..... <span class="ansi-yellow-intense-fg">[  16,   33 ]</span> -10.40
-((.((((((..(((((................)))))..........((<span class="ansi-red-intense-fg ansi-bold">.</span>.((....))..<span class="ansi-red-intense-fg ansi-bold">.</span>))..)))))).))..... <span class="ansi-red-intense-fg">[ -50,  -62 ]</span>  -8.70
-((.((((((..(((((................)))))..........(<span class="ansi-red-intense-fg ansi-bold">.</span>..((....))...<span class="ansi-red-intense-fg ansi-bold">.</span>)..)))))).))..... <span class="ansi-red-intense-fg">[ -49,  -63 ]</span>  -5.10
-((.((((((..(((((................)))))..........<span class="ansi-red-intense-fg ansi-bold">.</span>...((....))....<span class="ansi-red-intense-fg ansi-bold">.</span>..)))))).))..... <span class="ansi-red-intense-fg">[ -48,  -64 ]</span>  -6.80
-((.((((((..(((((................)))))..........<span class="ansi-yellow-intense-fg ansi-bold">(</span>...((....))...<span class="ansi-yellow-intense-fg ansi-bold">)</span>...)))))).))..... <span class="ansi-yellow-intense-fg">[  48,   63 ]</span>  -6.20
-((.((((((..(((((................))))).........<span class="ansi-yellow-intense-fg ansi-bold">(</span>(...((....))...)<span class="ansi-yellow-intense-fg ansi-bold">)</span>..)))))).))..... <span class="ansi-yellow-intense-fg">[  47,   64 ]</span> -10.00
-((.((((((..(((((................)))))........<span class="ansi-yellow-intense-fg ansi-bold">(</span>((...((....))...))<span class="ansi-yellow-intense-fg ansi-bold">)</span>.)))))).))..... <span class="ansi-yellow-intense-fg">[  46,   65 ]</span> -10.00
-((.((((((..(((((................))))).......<span class="ansi-yellow-intense-fg ansi-bold">(</span>(((...((....))...)))<span class="ansi-yellow-intense-fg ansi-bold">)</span>)))))).))..... <span class="ansi-yellow-intense-fg">[  45,   66 ]</span> -11.50
-((.(((((<span class="ansi-yellow-intense-fg ansi-bold">.</span>..(((((................))))).......((((...((....))...))))<span class="ansi-yellow-intense-fg ansi-bold">.</span>))))).))..... <span class="ansi-yellow-intense-fg">[  -9,  -67 ]</span> -11.30
-((.(((((...(((((................)))))......<span class="ansi-yellow-intense-fg ansi-bold">(</span>((((...((....))...))))<span class="ansi-yellow-intense-fg ansi-bold">)</span>))))).))..... <span class="ansi-yellow-intense-fg">[  44,   67 ]</span> -12.20
-((.((((<span class="ansi-yellow-intense-fg ansi-bold">.</span>...(((((................)))))......(((((...((....))...)))))<span class="ansi-yellow-intense-fg ansi-bold">.</span>)))).))..... <span class="ansi-yellow-intense-fg">[  -8,  -68 ]</span>  -9.80
-((.((((....(((((................))))).....<span class="ansi-yellow-intense-fg ansi-bold">(</span>(((((...((....))...)))))<span class="ansi-yellow-intense-fg ansi-bold">)</span>)))).))..... <span class="ansi-yellow-intense-fg">[  43,   68 ]</span> -13.40
-((.((((<span class="ansi-yellow-intense-fg ansi-bold">(</span>...(((((................)))))..<span class="ansi-yellow-intense-fg ansi-bold">)</span>..((((((...((....))...)))))))))).))..... <span class="ansi-yellow-intense-fg">[   8,   40 ]</span> -11.40
-((.(((((<span class="ansi-yellow-intense-fg ansi-bold">(</span>..(((((................))))).<span class="ansi-yellow-intense-fg ansi-bold">)</span>)..((((((...((....))...)))))))))).))..... <span class="ansi-yellow-intense-fg">[   9,   39 ]</span> -15.00
-((.((((((..(((((...<span class="ansi-yellow-intense-fg ansi-bold">(</span>.........<span class="ansi-yellow-intense-fg ansi-bold">)</span>..))))).))..((((((...((....))...)))))))))).))..... <span class="ansi-yellow-intense-fg">[  20,   30 ]</span> -12.80
-((.((((((..(((((..<span class="ansi-yellow-intense-fg ansi-bold">(</span>(.........)<span class="ansi-yellow-intense-fg ansi-bold">)</span>.))))).))..((((((...((....))...)))))))))).))..... <span class="ansi-yellow-intense-fg">[  19,   31 ]</span> -15.30
-((.((((((.<span class="ansi-yellow-intense-fg ansi-bold">(</span>(((((..((.........)).)))))<span class="ansi-yellow-intense-fg ansi-bold">)</span>))..((((((...((....))...)))))))))).))..... <span class="ansi-yellow-intense-fg">[  11,   38 ]</span> -17.30
-((.((((((.((((((<span class="ansi-yellow-intense-fg ansi-bold">(</span>.((.........))<span class="ansi-yellow-intense-fg ansi-bold">)</span>))))))))..((((((...((....))...)))))))))).))..... <span class="ansi-yellow-intense-fg">[  17,   32 ]</span> -18.40
-S:  -4.00 kcal/mol | B:  12.30 kcal/mol | E[start]:-16.30 E[end]:-18.40
 </pre>
 </div>
 </div>
@@ -16999,6 +16797,118 @@ S:  -2.50 kcal/mol | B:   1.90 kcal/mol | E[start]: -4.40 E[end]: -9.90
 
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain">
 <pre>-2.5</pre>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[6]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># https://stackoverflow.com/questions/22787209/how-to-have-clusters-of-stacked-bars-with-python-pandas</span>
+
+<span class="k">def</span> <span class="nf">plot_clustered_stacked</span><span class="p">(</span><span class="n">dfall</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="n">H</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a list of dataframes, with identical columns and index, create a clustered stacked bar plot. </span>
+<span class="sd">    labels is a list of the names of the dataframe, used for the legend</span>
+<span class="sd">    title is a string for the title of the plot</span>
+<span class="sd">    H is the hatch used for identification of the different dataframe</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">n_df</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfall</span><span class="p">)</span>
+    <span class="n">n_col</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfall</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> 
+    <span class="n">n_ind</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfall</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">axe</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">dfall</span> <span class="p">:</span> <span class="c1"># for each data frame</span>
+        <span class="n">axe</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span>
+                      <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                      <span class="n">stacked</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                      <span class="n">ax</span><span class="o">=</span><span class="n">axe</span><span class="p">,</span>
+                      <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                      <span class="n">grid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                      <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># make bar plots</span>
+
+    <span class="n">h</span><span class="p">,</span><span class="n">l</span> <span class="o">=</span> <span class="n">axe</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">()</span> <span class="c1"># get the handles we want to modify</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_df</span> <span class="o">*</span> <span class="n">n_col</span><span class="p">,</span> <span class="n">n_col</span><span class="p">):</span> <span class="c1"># len(h) = n_col * n_df</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">pa</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">n_col</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">rect</span> <span class="ow">in</span> <span class="n">pa</span><span class="o">.</span><span class="n">patches</span><span class="p">:</span> <span class="c1"># for each index</span>
+                <span class="n">rect</span><span class="o">.</span><span class="n">set_x</span><span class="p">(</span><span class="n">rect</span><span class="o">.</span><span class="n">get_x</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_df</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_col</span><span class="p">))</span>
+                <span class="n">rect</span><span class="o">.</span><span class="n">set_hatch</span><span class="p">(</span><span class="n">H</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">n_col</span><span class="p">))</span> <span class="c1">#edited part     </span>
+                <span class="n">rect</span><span class="o">.</span><span class="n">set_width</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_df</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="n">axe</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n_ind</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_df</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span>
+    <span class="n">axe</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">rotation</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">axe</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+
+    <span class="c1"># Add invisible data to add another legend</span>
+    <span class="n">n</span><span class="o">=</span><span class="p">[]</span>        
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_df</span><span class="p">):</span>
+        <span class="n">n</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">axe</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">hatch</span><span class="o">=</span><span class="n">H</span> <span class="o">*</span> <span class="n">i</span><span class="p">))</span>
+
+    <span class="n">l1</span> <span class="o">=</span> <span class="n">axe</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">h</span><span class="p">[:</span><span class="n">n_col</span><span class="p">],</span> <span class="n">l</span><span class="p">[:</span><span class="n">n_col</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="p">[</span><span class="mf">1.04</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">l2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="p">[</span><span class="mf">1.04</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span> 
+    <span class="n">axe</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">l1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">axe</span>
+
+<span class="c1"># create fake dataframes</span>
+<span class="n">df1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+                   <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">],</span>
+                   <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="s2">&quot;J&quot;</span><span class="p">,</span> <span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">])</span>
+<span class="n">df2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+                   <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">],</span>
+                   <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="s2">&quot;J&quot;</span><span class="p">,</span> <span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">])</span>
+<span class="c1"># df3 = pd.DataFrame(np.random.rand(4, 5),</span>
+<span class="c1">#                    index=[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;], </span>
+<span class="c1">#                    columns=[&quot;I&quot;, &quot;J&quot;, &quot;K&quot;, &quot;L&quot;, &quot;M&quot;])</span>
+
+<span class="c1"># exmample call</span>
+<span class="n">plot_clustered_stacked</span><span class="p">([</span><span class="n">df1</span><span class="p">,</span> <span class="n">df2</span><span class="p">],[</span><span class="s2">&quot;df1&quot;</span><span class="p">,</span> <span class="s2">&quot;df2&quot;</span><span class="p">])</span>    
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[6]:</div>
+
+
+
+
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain">
+<pre>&lt;AxesSubplot:&gt;</pre>
+</div>
+
+</div>
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+
+
+<div class="jp-RenderedImage jp-OutputArea-output ">
+<img src="data:image/png;base64,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
+"
+>
 </div>
 
 </div>
