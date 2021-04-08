@@ -238,9 +238,9 @@ class Fp_class():
 
             delta_e = self.fc.eval_structure_pt(new_ptable)/100 - e
             
-            if Verbose:
-                print(p_to_s(new_ptable), end=" ")
-                print(delta_e, self.fc.eval_structure_pt(new_ptable)/100, moves)
+            # if Verbose:
+            #     print(p_to_s(new_ptable), end=" ")
+            #     print(delta_e, self.fc.eval_structure_pt(new_ptable)/100, moves)
 
 
             # this should use eval move step by step
@@ -748,6 +748,8 @@ def find_path(sequence, s1, s2, add_moves=[], results=1, indirect_iterations=2, 
     best_ptables = []
     best_indirect_move_count = 0
 
+    init_max_en = False
+
     for iteration in range(indirect_iterations):
 
         # first pass is direct, then iterate over different indirect moves
@@ -807,10 +809,15 @@ def find_path(sequence, s1, s2, add_moves=[], results=1, indirect_iterations=2, 
                         current_ptable[j] = i
                     ptables.append(current_ptable.copy())
 
+
+
                 # save best path for print output / next iteration
                 if max_energy < best_max_en or \
                    (max_energy == best_max_en and len(current_used_indirect_moves) < best_indirect_move_count):
                    # or save best path with same energy, but fewer indirect moves: take this one instead
+
+                    if not init_max_en:
+                        init_max_en = max_energy
 
                     best_moves = current_moves.copy()
                     best_max_pos = saddle_pos
@@ -823,6 +830,11 @@ def find_path(sequence, s1, s2, add_moves=[], results=1, indirect_iterations=2, 
                     barrier = max_energy-e_0
                     print(
                         f"New best result: {max_energy:6.2f} kcal/mol | B: {barrier:6.2f} kcal/mol | E[start]:{e_0:6.2f} E[end]:{e_1:6.2f} | additional moves: {current_used_indirect_moves}")
+
+                # elif max_energy == best_max_en:
+                #     print(
+                #         f"Result:          {max_energy:6.2f} kcal/mol | B: {barrier:6.2f} kcal/mol | E[start]:{e_0:6.2f} E[end]:{e_1:6.2f} | additional moves: {current_used_indirect_moves}")
+
 
                 # indentation below...
                 # call find stack for every path? or every iteration
@@ -935,9 +947,9 @@ if __name__ == '__main__':
     # s2       = ".....................(((...(.(((((.......))))).)........((((((.......))))))..)))((((((((((((.(((((........)))))..............))))))))))))................................................................"
 
     # dsrA
-    # sequence = "ACACAUCAGAUUUCCUGGUGUAACGAAUUUUUUAAGUGCUUCUUGCUUAAGCAAGUUUCAUCCCGACCCCCUCAGGGUCGGGAUU"
-    # s1 = "..(((((((.....)))))))...(((((((((((((.......))))))).)))))).((((((((((.....))))))))))."
-    # s2 = "..(((((((.....)))))))................(...(((((....)))))...)((((((((((.....))))))))))."
+    sequence = "ACACAUCAGAUUUCCUGGUGUAACGAAUUUUUUAAGUGCUUCUUGCUUAAGCAAGUUUCAUCCCGACCCCCUCAGGGUCGGGAUU"
+    s1 = "..(((((((.....)))))))...(((((((((((((.......))))))).)))))).((((((((((.....))))))))))."
+    s2 = "..(((((((.....)))))))................(...(((((....)))))...)((((((((((.....))))))))))."
     # s1, s2 = s2, s1
 
 
@@ -1000,16 +1012,16 @@ if __name__ == '__main__':
     # add_moves = [(35, 49), (32, 53), (51, 59), (52, 58), (50, 60), (44, 49)]
 
     # 2
-    sequence = "GGAAGCCGGCGAGGCAGUACCAUUAUAUAGUUUGUCUUCCAAGAAUGGGUACGACCGCGGGACCGUUCGGUUAUCGUCUG"
-    s1 = ".((((((((.(((((((..............)))))))))..((((((...((....))...)))))))))).))....."
-    s2 = "((.((((((((.((..((((((((...................))))).)))..)).......)).)))))).))....."
+    # sequence = "GGAAGCCGGCGAGGCAGUACCAUUAUAUAGUUUGUCUUCCAAGAAUGGGUACGACCGCGGGACCGUUCGGUUAUCGUCUG"
+    # s1 = ".((((((((.(((((((..............)))))))))..((((((...((....))...)))))))))).))....."
+    # s2 = "((.((((((((.((..((((((((...................))))).)))..)).......)).)))))).))....."
 
     # add_moves = [(40, 47), (39, 48), (41, 46), (38, 49), (13, 63)]
     # add_moves = [(40, 47), (39, 48), (41, 46), (38, 49)]
     # add_moves = [(48, 64), (49, 63), (50, 62), (30, 36), (29, 37)]
 
     # at higher search width, this wins (even 20)
-    add_moves = [(40, 47), (39, 48), (41, 46), (38, 49), (14, 58), (15, 57), (17, 55), (18, 54), (20, 49)]
+    # add_moves = [(40, 47), (39, 48), (41, 46), (38, 49), (14, 58), (15, 57), (17, 55), (18, 54), (20, 49)]
     
     # add_moves = [(40, 47), (39, 48), (41, 46), (38, 49), (14, 58), (15, 57)]
     # add_moves = [(52, 60), (48, 56), (49, 55), (50, 54), (40, 47), (41, 46), (30, 36), (29, 37)]
@@ -1019,7 +1031,7 @@ if __name__ == '__main__':
     sequence = "GGAAGCCGGCGAGGCAGUACCAUUAUAUAGUUUGUCUUCCAAGAAUGGGUACGACCGCGGGACCGUUCGGUUAUCGUCUG"
     s1 = "((.((((((.(((((((.((.........)))))))))))..((((((...((....))...)))))))))).))....."
     s2 = "((.((((((((.((..((((((((....((.....))......))))).)))..)).)).......)))))).))....."
-    s1, s2 = s2, s1
+    # s1, s2 = s2, s1
 
     # 3
     # sequence = "UGUCGGGAUAGUCGAGGGAUGAUUUCUCUUUAGUGCCGGCACUCGAGGCCUCGUAACCCGACCCAAUGGGAUCCGAAUAU"
@@ -1042,7 +1054,7 @@ if __name__ == '__main__':
     # add_moves = [(20, 37), (19, 38), (25, 31), (24, 32), (23, 33), (26, 30)]
 
 
-    # 33
+    # 33 this ex is a good benchmark to beat...
     # sequence = "UAUUUUGUGUCACGCAAUUGGUUCACCCACUAUGCACGAAGUAUGCGAAGUACAGUCUAGUUAACAGUAAUAAUGCCUGG"
     # s1 = "((((((((((.(((((..(((.....)))...))).....))))))))))))(((.(.................).)))."
     # s2 = "((((((((.....(((..((((......))))))))))))))).((........))........(((.........)))."
@@ -1077,12 +1089,14 @@ if __name__ == '__main__':
 
 
 
+    add_moves = []
+    # add_moves =  [(55, 76), (56, 75), (61, 70), (60, 71), (62, 69), (63, 68), (11, 38), (10, 39)]
 
-
-    # s1, s2 = s2, s1
+    s1, s2 = s2, s1
 
     section = ()
-    search_width = 20
+    search_width = 64
+    # search_width = 640
     Verbose = True
     # Debug = True
     Debug = False
