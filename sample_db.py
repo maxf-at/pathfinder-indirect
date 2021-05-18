@@ -181,6 +181,7 @@ if __name__ == '__main__':
     # dataset = "indirect_60.csv"
     # dataset = "indirect_ea_60.csv"
     dataset = "indirect_input_80.csv"
+    # dataset = "indirect_ea_100.csv"
 
     description = "RNAeapath"
     # description = "TABU"

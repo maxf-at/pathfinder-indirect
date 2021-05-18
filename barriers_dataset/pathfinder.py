@@ -9,7 +9,7 @@ import time
 from dataclasses import dataclass
 
 import matplotlib.pyplot as plt
-from helper import path_class, print_moves
+from helper import path_class
 
 # @dataclass
 # class return_values:
@@ -102,21 +102,44 @@ def pathfinder(sequence, s1, s2, verbose=False, output=False, search_width = Non
     moves_pos = []
 
     for i, step in enumerate(paths):
+        # moves = [i for i in str_compare(current_structure, step.s)]
         moves = [i for i in str_compare('.'+current_structure, '.'+step.s)]
 
         current_structure = step.s
+        # moves_str.append((step.s, step.en, moves))
         moves_str.append(step.s)
         moves_en.append(step.en)
-
         if moves==[]:
             moves_pos.append((0,0,step.en))
         else:
+        #     if moves[0] < 1:
+        #         moves_pos.append((moves[0]-1,moves[1]-1,step.en))
+        #     else:
+        #         moves_pos.append((moves[0]+1,moves[1]+1,step.en))
             moves_pos.append((moves[0],moves[1],step.en))
 
+        if verbose:
+            print(f"{step.s} {step.en:6.2f} {moves}")
+            # print(f"{i:2d} {step.s} {step.en:6.2f} {moves}")
+
+            # moves_str.append(f"{i:2d} {step.s} {step.en:6.2f} {moves}\n")
         if step.en > sE:
             sE = step.en
             s_pos = i
 
+
+
+    # moves_pos = (sE, moves_pos)
+
+    # unused, write output to file
+    if output:
+        with open(output, 'w') as f:
+            for i, step in enumerate(paths):
+                line = f"{i:2d} {step.s} {step.en:6.2f}\n"
+                f.write(line)
+
+    # dcal_sE = fc.path_findpath_saddle(s1, s2, width = search_width)
+    # sE2 = float(dcal_sE)/100 # saddle energy
 
     e1 = round(fc.eval_structure(s1), 2)
     e2 = round(fc.eval_structure(s2), 2)
@@ -139,10 +162,9 @@ def pathfinder(sequence, s1, s2, verbose=False, output=False, search_width = Non
     end = time.time()
     runtime = end - start
 
-
     if verbose:
-        print_moves(sequence, s1, s2, moves_pos, move_color='\033[92m')
-
+        print(
+            f"S: {sE:6.2f} kcal/mol | B: {barrier:6.2f} kcal/mol | E[0]:{e1:6.2f} E[{len(moves_pos)}]:{e2:6.2f} | min E1: {en_min_a-e1:6.2f} / min E2: {en_min_b-e2:6.2f}  | {runtime:3.2f} s")
 
     return_path = path_class()
     return_path.max_en=sE
@@ -201,41 +223,8 @@ if __name__ == '__main__':
     s2 = "..(.......((((...(((((.......)))))))))(((.((...)).))).(((((...))))).)...((((((((.....))).)))))((((((.(...((......))...).)))))).......(((((.......)))))"
 
 
-    sequence = "GAAAGUUUUCAAGAAAGUAAUAUAGUGUCCCAGUCAGGGGGUAGUGGCGCGUUCUGGACGCAUAGUAUUC"
-    s1 = "((......)).....((((.(((.((((((.((.....(.((....)).)...))))))))))).))))." #7.4 / 7.4
-    # s1 = "...............((...(((.(((((.(((..((.(.((....)).).)))))))))))))...))." # 7.2 / 8
-    # s1 = "................(((.(((.((((((.((..((.(.((....)).).))))))))))))).))).." # 7.4 / 7.4
-    # s1 = "................(((.....((((.((((...(.(........).)...))))))))....))).." # 7.5 / 7.7
-    # s1 = "...............((((.(((.(((((.(((..((.(.((....)).).))))))))))))).))))." # 7.8 / 8
-    # s1 = "(((....)))......(((.(((.(((((.(((..(.(.(.......).).).))))))))))).))).." # 7   / 6.6 
 
-
-    s1 = '...............((((.(((.(((((.(((..((.(.((....)).).))))))))))))).)))).'
-    s1 = '...............((...(((.(((((.(((..((.(.((....)).).)))))))))))))...)).'
-
-    s2 = "(((....))).........(((((((((.((((...(.(.((....)).).).)))))))).)).))).."
-    # s2 = ".................((.(((.((((.((((..(.(..((....)).).).))))))))))).))..."
-
-
-    sequence = "CGGGAGCGAGUAUGGACCGGGUUGAAUUGGUACCUCGGCCGCCCUCUGGGGGUAGCCGACGGGCGGCUUCAGCCGGGCCC"
-    s1 = ".............((.((.(((((((.(.((.(((((((.(((((...))))).))))).)))).).))))))).)).))"
-    # s2 = ".............((.((.((((((...........((((((((((.((......)))).)))))))))))))).))))."
-    s2 = "((....)).....((.((.(((((((..............(((((...))))).(((....)))...))))))).))))."
-
-
-    s1 = "((....)).....((.((.(((((((..............(((((...))))).(((....)))...))))))).))))."
-    # s1 = ".............((.((.((((((...........((((((((((.((......)))).)))))))))))))).))))."
-    s2 = "((....)).....((.((.(((((((...........(((((((((.(.(.....)))).)))))))))))))).))))."
-# 
-    sequence = 'GAGCGCAGUGUACGCGUAUCAACCAAAGGCGGCCCAGUGGUUGCGCCGAGUACGCCAACGACAGACAGUCCCCGUUCGUCCGAUUAUCCAAGAACUAAUAUUAGAUAUGAGGUCGUAACAACCUCGCGUGAUAUCUCUAUUCAUGGUCAG'
-    s1       = '(((((..((((((.((...((((((..((....))..))))))...)).))))))....(((.....)))..)))))....((((((....(((...((((((....((((((.......))))))..)))))).....)))))))))..'
-    s2       = '(((((..((((((((((...(((((..((....))..)))))))))...))))))....(((.....)))..)))))..........(((.(((..........((.((((((.......)))))).))..........))).)))....'
-    
-    s1       = '(((((..((((((((((...(((((..((....))..)))))))))...))))))....(((.....)))..)))))..........(((.(((..........((.((((((.......)))))).))..........))).)))....'
-    s2       = '(((((..((((((.((...((((((..((....))..))))))...)).))))))....(((.....)))..)))))................(((((((..(((((((((((.......))))).....)))))).)))...))))...'
-
-
-    path = pathfinder(sequence, s1, s2, verbose=True, search_width=500)
+    path = pathfinder(sequence, s1, s2, verbose=True)
     print (path)
     # plt = plot_paths(path)
     # plt.show()

@@ -21,6 +21,7 @@ class path_class:
     min_en_b: float = float("inf")
     max_en: float = float("-inf")
     max_en_pos: int = 0
+    
 
     e1_en: float = 0
     e2_en: float = 0
@@ -37,6 +38,7 @@ class path_class:
     runtime: float = 0
     runtime_ext: float = 0
     runtime_merge: float = 0
+    runtime_merge_ext: float = 0
 
 
 def p_to_s(tb):
@@ -104,7 +106,7 @@ def generate_structures(length=150):
     return sequence, s1, s2
 
 
-def print_moves(sequence, s1, s2, moves, move_color='\033[93m', Verbose = True, ignore_moves=set()):
+def print_moves(sequence, s1, s2, moves, move_color='\033[93m', structures=False, Verbose = True, exclude=None, include=None):
 
     """
     print a folding path with colour coding
@@ -131,54 +133,31 @@ def print_moves(sequence, s1, s2, moves, move_color='\033[93m', Verbose = True, 
 
     if Verbose: print(sequence)
     s = s1
-    pt = list(RNA.ptable_from_string(s))
-
-    move_color='\033[92m'
 
     fc = RNA.fold_compound(sequence)
     e1 = en = round(fc.eval_structure(s), 2)
     max_en = float("-inf")
 
+
+
     output_rows = []
     moves_i_j = [(x[0],x[1]) for x in moves]
 
     # preprocessing - generate strings & energies if required
-    for move in moves:
+    for a, move in enumerate(moves):
         en = False
         if len(move) == 2:
             i, j = move
         if len(move) == 3:
             i, j, en = move
-
-        if (i,j) in ignore_moves:
-            continue
-
-        lp = RNA.loopidx_from_ptable(pt)
         
-        # print (i,j, lp[i], lp[j])
-
-        if i>0: # add bp            
-            if (pt[i]!=0 or pt[j]!=0):
-                return 999,""
-            if (lp[i] != lp[j]):
-                return 999,""
-            pt[i] = j
-            pt[j] = i
-        
-        if j<0: # del bp
-            if (pt[-i]!=-j):
-                return 999,""
-            pt[-i] = 0
-            pt[-j] = 0
-
-
-        # if i > 0:
-        #     s = s[:i-1] + "(" + s[i:j-1] + ")" + s[j:]
-        # if i < 0:
-        #     s = s[:-i-1] + "." + s[-i:-j-1] + "." + s[-j:]
-
-        s = RNA.db_from_ptable(pt)
-
+        if structures:
+            s = structures[a]
+        else:
+            if i > 0:
+                s = s[:i-1] + "(" + s[i:j-1] + ")" + s[j:]
+            if i < 0:
+                s = s[:-i-1] + "." + s[-i:-j-1] + "." + s[-j:]
         if not en:
             en = round(fc.eval_structure(s), 2)
         e2 = en
@@ -210,22 +189,29 @@ def print_moves(sequence, s1, s2, moves, move_color='\033[93m', Verbose = True, 
                 s[pos_j] + c.ENDC + s[pos_j+1:]
             info = f'{move_color}[{i:4}, {j:4} ]{c.ENDC}'
 
+        # mark pos x
+        # x = 10
+        # colored_s = colored_s[0:x] + c.CYAN + colored_s[x:x+1] + c.ENDC + colored_s[x+1:]
+
         if en == max_en:
             info += f' {c.RED}{c.BOLD}{en:6.2f}{c.ENDC}'
         else:
             info += f' {en:6.2f}'
 
-        if Verbose: print(f"{colored_s} {info}")
+        if Verbose:
+            if include != None:
+                if abs(i) in include:
+                    print(f"{info}")
+            elif exclude != None:
+                if abs(i) not in exclude:
+                    print(f"{info}")
+            else:
+                print(f"{colored_s} {info}")
 
     barrier = max_en - e1
     if Verbose: print(
         f"S: {max_en:6.2f} kcal/mol | B: {barrier:6.2f} kcal/mol | E[start]:{e1:6.2f} E[end]:{e2:6.2f}")
     
-
-    if ignore_moves!=set():
-        return max_en, s # last structure
-
-
     return max_en
 
 

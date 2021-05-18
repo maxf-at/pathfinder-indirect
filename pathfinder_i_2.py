@@ -244,7 +244,7 @@ class Fp_class():
 
 
             # this should use eval move step by step
-            return delta_e
+            return delta_e, new_ptable
 
 
         # test = [(49,   56), (50,   55 )]
@@ -314,7 +314,9 @@ class Fp_class():
 
             processed.append(set(candidate))
 
-            moves_to_en(candidate, Verbose=True)
+            _,pt_new = moves_to_en(candidate, Verbose=True)
+
+            print(f"'{RNA.db_from_ptable(pt_new)}',")
 
             # print ("yield", set(candidate))
 
@@ -524,13 +526,20 @@ class Fp_class():
 
             # if max_pos == 13:
             #     # print (candidates)
-            #     for en, candidate in all_candidates[:10]:
-            #         moves_to_en(candidate, Verbose=True)
-            #         yield set(candidate)
-            #         # print (max_pos, candidate, en, base_energy, candidate)
+            # for en, candidate in all_candidates[:10]:
+                # moves_to_en(candidate, Verbose=True)
+                # yield set(candidate)
+                # print (max_pos, candidate, en, base_energy, candidate)
 
             if all_candidates != [] and all_candidates[0][0] < base_energy:
-                # print (p_to_s(current_ptable))
+                
+                # print (p_to_s(current_ptable), "+", all_candidates[0][-1])
+                moves_to_en(all_candidates[0][-1], Verbose=True)
+
+                # for move in 
+
+
+                # print(f"'{RNA.db_from_ptable(pt_new)}',")
                 # print ("c:", all_candidates[1][-1], moves_to_en(all_candidates[1][-1], Verbose=True))
                 # print ()
                 # i = all_candidates[0][1][0][0]
@@ -552,6 +561,7 @@ class Fp_class():
         s_ptable: current ptable
         t_ptable: s2 end ptable
         """
+
         # loop table
         ls = self.l_tables(s_ptable)
 
@@ -559,11 +569,15 @@ class Fp_class():
         for i, j in self.moves_add:
             if i > 0 and s_ptable[i] == 0 and s_ptable[j] == 0 and ls[i] == ls[j]:
                 # self.moves_add.remove((i,j))
-                yield i, j
-            # if i<0 and ls[i]==ls[j]:
                 # print ("try", i, j)
+                yield i, j
+                # pass
+            if i<0:
+            # if i<0 and -j == s_ptable[-i]:
+                # and -i==s_ptable[-i]:
+                # print ("try -", i, j, s_ptable[i], s_ptable[-i])
                 # self.moves_add.remove((i,j))
-                # yield i,j
+                yield i,j
 
         for i in range(len(s_ptable)):
             if i == 0:
@@ -706,14 +720,19 @@ class Fp_class():
             # second sorting step
             collect_paths.sort(key=lambda x: (x[-1].saddle_e, x[-1].current_e))
 
+            # print("iteration", current_bp, len(collect_paths))
+
             # discard paths
             collect_paths = collect_paths[:width]
 
             # return valid paths if we're past the minimum bp_dist
-            if current_bp >= current_bp_end-1:
+            if current_bp >= current_bp_end-1:# or current_bp==30:
                 for i in range(len(collect_paths)):
                     if collect_paths[i][-1].p_table == list(end_p_table):
+                        # print("y")
                         yield collect_paths[i][-1]
+                    # yield collect_paths[i][-1]
+
 
             # next iteration
             paths = collect_paths
@@ -748,6 +767,8 @@ def find_path(sequence, s1, s2, add_moves=[], results=1, indirect_iterations=2, 
     best_ptables = []
     best_indirect_move_count = 0
 
+    return_value = 9999
+
     init_max_en = False
 
     for iteration in range(indirect_iterations):
@@ -763,7 +784,8 @@ def find_path(sequence, s1, s2, add_moves=[], results=1, indirect_iterations=2, 
                 indirect_move = []  # first iteration only
 
             indirect_move = set(best_indirect_moves) | set(indirect_move)
-            print("Iteration", iteration,
+            if Verbose:
+                print("Iteration", iteration,
                   "launching findpath with addtional moves:", indirect_move)
 
             # add a set of optional indirect moves to the direct move set, e.g. add {(6, 12), (5, 13)}
@@ -828,7 +850,8 @@ def find_path(sequence, s1, s2, add_moves=[], results=1, indirect_iterations=2, 
                     best_ptables = ptables.copy()
                     best_indirect_moves = current_used_indirect_moves.copy()
                     barrier = max_energy-e_0
-                    print(
+                    if Verbose:
+                        print(
                         f"New best result: {max_energy:6.2f} kcal/mol | B: {barrier:6.2f} kcal/mol | E[start]:{e_0:6.2f} E[end]:{e_1:6.2f} | additional moves: {current_used_indirect_moves}")
 
                 # elif max_energy == best_max_en:
@@ -851,8 +874,9 @@ def find_path(sequence, s1, s2, add_moves=[], results=1, indirect_iterations=2, 
             if iteration+1 != indirect_iterations:  # dont find new indirect moves in the last iteration                
                 print ("call find_stack for best path")
                 for current_indirect_moves in fp_class.find_stack(best_ptables, best_moves, best_max_pos):
-                    # print ("find move", current_indirect_moves, next_indirect_moves)
+                    # print ("find move", current_indirect_moves)
                     if current_indirect_moves not in next_indirect_moves:
+                        print ("add", current_indirect_moves)
                         next_indirect_moves.append(current_indirect_moves)
 
 
@@ -863,7 +887,8 @@ def find_path(sequence, s1, s2, add_moves=[], results=1, indirect_iterations=2, 
 
         # print path during last iteration
         if iteration+1 == indirect_iterations:
-            print_moves(sequence, s1, s2, best_path)
+            # print(best_path)
+            return_value = print_moves(sequence, s1, s2, best_path, Verbose=Verbose)
         # prepare for next indirect iteration
         else:
             # print ("found indirect moves:")
@@ -877,7 +902,7 @@ def find_path(sequence, s1, s2, add_moves=[], results=1, indirect_iterations=2, 
         #  (8, 38), (9, 37), (10, 36)]
 
     # code here to not just return nothing
-    return
+    return return_value
 
 
 if __name__ == '__main__':
@@ -924,9 +949,9 @@ if __name__ == '__main__':
     # s2 = "...........(((((((((..............)))))))))..."
 
     # rna2dfold example
-    # sequence = "GGGCGCGGUUCGCCCUCCGCUAAAUGCGGAAGAUAAAUUGUGUCU"
-    # s1 = "(((((.....)))))(((((.....)))))(((((.....)))))"
-    # s2 = "((((((((((.....(((((.....))))).....))))))))))"
+    sequence = "GGGCGCGGUUCGCCCUCCGCUAAAUGCGGAAGAUAAAUUGUGUCU"
+    s1 = "(((((.....)))))(((((.....)))))(((((.....)))))"
+    s2 = "((((((((((.....(((((.....))))).....))))))))))"
 
     # EApath supplement
 
@@ -947,9 +972,9 @@ if __name__ == '__main__':
     # s2       = ".....................(((...(.(((((.......))))).)........((((((.......))))))..)))((((((((((((.(((((........)))))..............))))))))))))................................................................"
 
     # dsrA
-    sequence = "ACACAUCAGAUUUCCUGGUGUAACGAAUUUUUUAAGUGCUUCUUGCUUAAGCAAGUUUCAUCCCGACCCCCUCAGGGUCGGGAUU"
-    s1 = "..(((((((.....)))))))...(((((((((((((.......))))))).)))))).((((((((((.....))))))))))."
-    s2 = "..(((((((.....)))))))................(...(((((....)))))...)((((((((((.....))))))))))."
+    # sequence = "ACACAUCAGAUUUCCUGGUGUAACGAAUUUUUUAAGUGCUUCUUGCUUAAGCAAGUUUCAUCCCGACCCCCUCAGGGUCGGGAUU"
+    # s1 = "..(((((((.....)))))))...(((((((((((((.......))))))).)))))).((((((((((.....))))))))))."
+    # s2 = "..(((((((.....)))))))................(...(((((....)))))...)((((((((((.....))))))))))."
     # s1, s2 = s2, s1
 
 
@@ -1028,9 +1053,9 @@ if __name__ == '__main__':
 
 
     # 2 alt 1-4
-    sequence = "GGAAGCCGGCGAGGCAGUACCAUUAUAUAGUUUGUCUUCCAAGAAUGGGUACGACCGCGGGACCGUUCGGUUAUCGUCUG"
-    s1 = "((.((((((.(((((((.((.........)))))))))))..((((((...((....))...)))))))))).))....."
-    s2 = "((.((((((((.((..((((((((....((.....))......))))).)))..)).)).......)))))).))....."
+    # sequence = "GGAAGCCGGCGAGGCAGUACCAUUAUAUAGUUUGUCUUCCAAGAAUGGGUACGACCGCGGGACCGUUCGGUUAUCGUCUG"
+    # s1 = "((.((((((.(((((((.((.........)))))))))))..((((((...((....))...)))))))))).))....."
+    # s2 = "((.((((((((.((..((((((((....((.....))......))))).)))..)).)).......)))))).))....."
     # s1, s2 = s2, s1
 
     # 3
@@ -1087,16 +1112,127 @@ if __name__ == '__main__':
     # s1, s2 = s2, s1
 
 
+    # sequence = 'UAAAAUGAUCACGGUUUCAGCUUUGGACAGGGCGUUCCACUAAACUCCUGGUGACAUAGAUAUAUUGGAUUGCAACUACUCGUCGGUCCGGUUGGCGUUC'
+    # s1       = '....(((.((((...............(((((.(((......)))))))))))))))......(((((((((..((.....)))))))))))........'
+    # s2       = '..........(((...((((((..((((..((((...(((((......)))))...........(((.....))).....)))).)))))))))))))..'
+
+    # s1       = '..........(((...((((((..((((..((((...(((((......)))))...........(((.....))).....)))).)))))))))))))..'
+    # s2       = '....(((.(((((((....))).....(((((.(((......)))))))))))))))......(((((((((..((.....)))))))))))........'
+    # add_moves = [(40, 50), (37, 53), (36, 54), (64, 77), (63, 78), (50, 55), (49, 56), (59, 76), (58, 77), (57, 78), (38, 50), (39, 49), (37, 51), (35, 53), (67, 76), (60, 66), (53, 73), (52, 74), (55, 72), (56, 71), (51, 76), (50, 77), (49, 78), (52, 75), (32, 47), (31, 48), (30, 49), (53, 73), (52, 74), (60, 66), (50, 76), (50, 55), (67, 73), (66, 74), (65, 75), (59, 81), (60, 80), (53, 84), (54, 83), (55, 82), (52, 85), (59, 76), (58, 77), (57, 78), (59, 81), (60, 80), (76, 82), (75, 83), (73, 85), (73, 82), (25, 55), (24, 56), (21, 59), (22, 58), (15, 94), (18, 25), (19, 24), (17, 26), (16, 27), (76, 82), (75, 83)]
+
+
+
+
+    # sequence = 'AAGAAGACCUCAAUCGAAUCACGGGCAAGUCCGACGAGGAACGCCUAGGCGAGGUGAUCGGCCCGAUCUUAAUGUAGGAU'
+    # s1       = '.....((......))......(((((..((((..(((((....)))...))..).)))..)))))((((((...))))))'
+    # s2       = '.......(((...........(((((...(((.....))).(((((.....)))))....)))))..........)))..'
+    # add_moves = [(35, 54), (42, 48), (34, 55), (39, 50), (42, 51), (43, 50), (44, 49), (32, 54)]
+
+    # sequence = 'CUUCCAGAGUUUCGUUGAACCGGCAAACGGCCACUAAGGAUAGCGCCUCCCGCUUGUCCCUGGACCGGCGUGCAUCGUAU'
+    # s1       = '......................(((..((((((....((((((((.....)))).)))).))).)))...))).......'
+    # s2       = '..(((((.((((....)))).(((.....))).....((((((((.....))).))))))))))...(((.....)))..'
+    # add_moves = [(32, 63), (34, 63), (35, 62), (36, 61), (28, 68), (30, 66), (29, 69), (31, 67), (28, 70), (27, 71), (32, 67), (31, 68), (23, 73), (24, 72), (25, 71), (30, 69), (28, 70), (27, 71), (22, 28), (21, 29), (20, 30), (7, 76), (8, 75), (13, 70), (14, 69), (9, 73), (10, 72), (15, 68), (16, 67), (17, 66)]
+
+    # sequence = 'CUGGGUCGUGGUGGCCUUUUAGAUACGAUUCACGAACGUAGCACGUUUCGGUCUCCGGAGACGCAAUGAUCUCGAGGGUA'
+    # s1       = '.(((((((((.............)))))))))(((((((...))))).)).((((.(((..........))).))))...'
+    # s2       = '.(((((((((.............)))))))))(((.(((.((...((((((...))))))..)).)))...)))......'
+    # add_moves = [(57, 73), (58, 72), (60, 71), (61, 70), (59, 72), (58, 73), (55, 76), (54, 77), (53, 78), (34, 48), (48, 58), (47, 59), (46, 60), (45, 62), (44, 63), (46, 61), (47, 60), (48, 59), (40, 67), (39, 68), (48, 58), (47, 59), (46, 60)]
+
+    # sequence = 'GGAAGCCGGCGAGGCAGUACCAUUAUAUAGUUUGUCUUCCAAGAAUGGGUACGACCGCGGGACCGUUCGGUUAUCGUCUG'
+    # s1       = '((.((((((((.((..((((((((....((.....))......))))).)))..)).)).......)))))).)).....'
+    # s2       = '((.((((((.(((((((.((.........)))))))))))..((((((...((....))...)))))))))).)).....'
+
+    # s2       = ".........((.((..((((((((....((.....))......))))).)))..)).))....................."
+    # s2       = ".............(..((((((((....((.....))......))))).)))..).(((.((((....))))..)))..."
+
+    # s1       = ".............(..((((((((....((.....))......))))).)))..).(((.((((....))))..)))..."
+    # s2       = '((.((((((.(((((((.((.........)))))))))))..((((((...((....))...)))))))))).)).....'
+
+    # s1       = '((..(((.....))).((((((((....((.....))......)))).))))..))((((((((....)))).))))...'                
+    # s1       = '............((..((((((((......((((.....))))))))).)))..))((((((((....)))).))))...'
+    # s2       = '((.((((((.(((((((.((.........)))))))))))..((((((...((....))...)))))))))).)).....'    
+
+    # s1       = '((.((((((((.((..((((((((....((.....))......))))).)))..)).)).......)))))).)).....'
+    # s2       = '...((((((.(((((((.((.((...)).)))))))))))..(((..(((.((....))..))).)))))))........'
+
+
+    # add_moves = [(8, 64), (9, 63), (7, 65), (2, 68), (3, 67), (4, 66), (6, 61), (7, 60), (1, 64), (2, 63), (9, 58), (10, 57), (63, 70), (64, 69), (62, 71), (10, 59), (11, 58), (61, 72), (58, 76), (59, 75), (57, 77), (60, 74), (6, 14), (7, 13), (5, 15), (47, 56), (48, 55), (1, 21), (2, 20), (29, 37), (30, 36), (1, 40), (2, 39), (3, 38), (21, 34), (22, 33), (4, 37), (17, 28), (18, 27), (19, 26), (5, 36), (8, 40), (9, 39), (46, 57), (58, 65), (59, 64), (6, 70), (7, 69), (5, 71), (4, 72), (1, 75), (2, 74), (8, 68), (9, 67), (39, 48), (40, 47), (41, 46), (9, 66), (10, 65), (48, 64), (49, 63), (50, 62), (8, 40), (9, 39)]
+    
+    # -4.00
+    # add_moves = [(49,63),(50,62),(48,64)]
+
+    # works with 1200
+    # add_moves = [(57, 77),(58, 76), (59, 75),  (60, 74),  (61, 72),  (62, 71), (63, 70), (64, 69),]
+    # add_moves += [(47, 56), (48, 55)]
+    # add_moves += [(5,15), (6,14), (7,13)]
+    # add_moves += [(1,40), (2, 39), (3, 38)]
+    # add_moves += [(-1, -75), (-2, -74), (-4, -72), (-5, -71), (-6, -70), (-7, -69), (-8, -68),]
+    # add_moves += [( 8,  64), (9, 63)]
+
+    # todo: Helices: group them together...
+
+
+    # add_moves = []
+    # add_moves = [(-9, -67), (9, 67)]
+    
+    
+    # add_moves += [(-1, -75), (-2, -74), (-4, -72), (-5, -71), (-6, -70), (-7, -69)]
+    
+
+    # s1 = "(((((..............................)))))......((......))((((((((....)))).))))..."
+    # s2       = '((.((((((.(((((((.((.........)))))))))))..((((((...((....))...)))))))))).)).....'
+
+    
+    # add_moves = [(-9, -67), (-8, -68), (8, 64), (9, 63), (-1, -75), (-2, -74), (-4, -72), (-5, -71), (-6, -70), (-7, -69), (7, 65), (2, 68), (3, 67), (4, 66), (-4, -66), (-2, -68), (-3, -67), (-7, -65), (-8, -64), (-9, -63), (6, 61), (7, 60), (1, 64), (2, 63), (-10, -59), (-11, -58), (9, 58), (10, 57), (-1, -64), (-2, -63), (63, 70), (64, 69), (62, 71), (-9, -58), (-10, -57), (10, 59), (11, 58), (-6, -61), (-7, -60), (61, 72), (-10, -59), (-11, -58), (58, 76), (59, 75), (57, 77), (60, 74), (-13, -56), (-14, -55), (6, 14), (7, 13), (5, 15), (-19, -50), (-17, -52), (-18, -51), (-29, -37), (-30, -36), (-24, -44), (-23, -45), (-22, -46), (-20, -48), (-21, -47), (47, 56), (48, 55), (1, 21), (2, 20), (-1, -21), (-2, -20), (29, 37), (30, 36), (1, 40), (2, 39), (3, 38), (-29, -37), (-30, -36), (21, 34), (22, 33), (4, 37), (-21, -34), (-22, -33), (17, 28), (18, 27), (19, 26), (-5, -15), (5, 36), (-19, -26), (-17, -28), (-18, -27), (-6, -14), (-7, -13), (14, 35), (15, 34), (16, 33), (17, 32), (19, 31), (20, 30), (-5, -36), (13, 36), (-4, -37), (12, 37), (-3, -38), (11, 38), (-1, -40), (-2, -39), (8, 40), (9, 39), (-57, -77), (46, 57), (-60, -74), (-58, -76), (-59, -75), (-61, -72), (-62, -71), (-63, -70), (-64, -69), (58, 65), (59, 64), (-46, -57), (6, 70), (7, 69), (5, 71), (4, 72), (1, 75), (2, 74), (-8, -40), (-9, -39), (8, 68), (9, 67), (-47, -56), (-48, -55), (39, 48), (40, 47), (41, 46), (-57, -66), (-58, -65), (-59, -64), (52, 59), (53, 58), (-9, -67), (9, 66), (10, 65), (-41, -46), (-39, -48), (-40, -47), (48, 64), (49, 63), (50, 62), (-9, -66), (-10, -65), (-8, -68), (8, 40), (9, 39), (43, 68), (44, 67), (45, 66), (46, 65), (-50, -62), (-48, -64), (-49, -63), (47, 64), (48, 63)]
+    # sequence = 'UAAAAUGAUCACGGUUUCAGCUUUGGACAGGGCGUUCCACUAAACUCCUGGUGACAUAGAUAUAUUGGAUUGCAACUACUCGUCGGUCCGGUUGGCGUUC'
+    # s1       = '..........(((...((((((..((((..((((...(((((......)))))...........(((.....))).....)))).)))))))))))))..'
+    # s2       = '....(((.(((((((....))).....(((((.(((......)))))))))))))))......(((((((((..((.....)))))))))))........'
+
+
+    # # 80 nt, S: -16.60 simple detour, -17.70 better one
+    # sequence = "CGGGAGCGAGUAUGGACCGGGUUGAAUUGGUACCUCGGCCGCCCUCUGGGGGUAGCCGACGGGCGGCUUCAGCCGGGCCC"
+    # s1 = ".............((.((.(((((((.(.((.(((((((.(((((...))))).))))).)))).).))))))).)).))"
+    # s2 = "((....)).....((.((.(((((((...........(((((((((.(.(.....)))).)))))))))))))).))))."
+
+    # # 150 nt, -20.10 kcal/mol direct, indirect -24.50
+    # sequence = 'AAAAUAAUGUACCGGACAUUCGCGCACGACCACCAUAUGGCAGAGCAUGUGUCUGUGGACCCACUAUAGCUGGGGCGCUUAACCCCAGAAAAGUAUCUUCGGUCUAUGCCUCACACGCAGCCUCCUAUUAGCAGCUCUCCUGGCCCACAA'
+    # s1       = '.............((((((..((...(..(((.....)))..).))..))))))(((((((....(((.((((((.......)))))).....)))....)))))))(((......((.((.........)).))......)))......'
+    # s2       = '......(((.((((((...(((....))).(((((((((......))))))...)))((...(((....((((((.......))))))...))).)))))))).)))(((......((.((.........)).))......)))......'
+
+    # sequence = 'AAAAUAAUGUACCGGACAUUCGCGCACGACCACCAUAUGGCAGAGCAUGUGUCUGUGGACCCACUAUAGCUGGGGCGCUUAACCCCAGAAAAGUAUCUUCGGUCUAUGCCUCACACGCAGCCUCCUAUUAGCAGCUCUCCUGGCCCACAA'
+    # s1       = '.....(((((.....))))).......(((....(((((......))))))))(((((..(((....((((((((.......)))...............(((...(((.......)))))).........)))))....))).))))).'
+    # s2       = '.......((..(((((.....((((.............(((...((.((((...(((((((........((((((.......))))))............)))))))....)))).)).)))........)).))..))).))..))...'
+
+    sequence = 'UAAACUCCUGGUGACAUAGAUAUAUUGGAUUGCAACUACUCGUCGGUCCGGUUGGCGUUCAACCCGCGAUAAGUUGGCGCUUGUCCCACUCCGUAAACCUGUGUCUCUCAGGCGGUUACC'
+    s1       = '(((.(((((((.(((((((...(((.(((.((..((....((((((((((((((.....))).))).)))....)))))...))..)).))))))...)))))))..))))).)))))..'
+    s2       = '..(((((((((.(((((((...(((.(((((((........).))))))(((((.....)))))...(((((((....))))))).......)))...))))))).).)))).))))...'
+    add_moves = [(-23, -95), (-25, -93), (46, 74), (26, 93), (-24, -94)]
+
+    # sequence = 'AGCUUAAUGAUCCACGGGUUCGCUGCACUGCAGCUUUUCACGGACUCUGUGCCGUUUGGAGUGACCAGGUCUCUCCCGCUUCGCGCGAGGUGGGUCCACGCAAGCCGGCACGCGAAAGGG'
+    # s1       = '...............(((((((((((...))))).......))))))(((((((((((..((((((...((((...(((...))).))))..))).))).))))).))))))........'
+    # s2       = '........((.((...)).))(((((...)))))(((((........(((((((((((..(((....((.(((.(((((.....))).)).)))))))).)))).))))))).)))))..'
+    # add_moves = {(22, 41), (68, 97), (12, 119), (69, 96), (-63, -97), (13, 118)}
+    # add_moves = {(68, 97), (12, 119), (-61, -99), (69, 96), (-63, -97), (-62, -98), (13, 118)}
+
+    sequence = "CGGGAGCGAGUAUGGACCGGGUUGAAUUGGUACCUCGGCCGCCCUCUGGGGGUAGCCGACGGGCGGCUUCAGCCGGGCCC"
+    s1 = ".............((.((.(((((((.(.((.(((((((.(((((...))))).))))).)))).).))))))).)).))"
+    s2 = "((....)).....((.((.(((((((...........(((((((((.(.(.....)))).)))))))))))))).))))."
+    add_moves = [(57, 62), (56, 63), (55, 64)]
+
+    sequence = "GAAAGUUUUCAAGAAAGUAAUAUAGUGUCCCAGUCAGGGGGUAGUGGCGCGUUCUGGACGCAUAGUAUUC"
+    s1 = "(((....))).........(((((((((.((((...(.(.((....)).).).)))))))).)).))).."
+    s2 = ".................((.(((.((((.((((..(.(..((....)).).).))))))))))).))..."
+
 
 
     add_moves = []
-    # add_moves =  [(55, 76), (56, 75), (61, 70), (60, 71), (62, 69), (63, 68), (11, 38), (10, 39)]
 
-    s1, s2 = s2, s1
+    # s1, s2 = s2, s1
 
     section = ()
-    search_width = 64
-    # search_width = 640
+    # search_width = 64
+    search_width = 500
+    # search_width = 4200
     Verbose = True
     # Debug = True
     Debug = False
@@ -1112,7 +1248,7 @@ if __name__ == '__main__':
     # indirect_iterations = 1
 
     # add_moves = []
-    # indirect_iterations = 1
+    indirect_iterations = 1
     indirect_iterations = 2
     # indirect_iterations = 3
 
@@ -1121,6 +1257,7 @@ if __name__ == '__main__':
 
 
     search_width = 50
+    Verbose = False
     print('orig findpath:')
     pathfinder_result = pathfinder.pathfinder(
         sequence, s1, s2, search_width=search_width, verbose=Verbose)

@@ -1,4 +1,5 @@
 {
     "python.pythonPath": "/usr/bin/python3",
-    "jupyter.textOutputLimit": 30000
+    "jupyter.textOutputLimit": 30000,
+    "C_Cpp.intelliSenseEngineFallback": "Enabled"
 }
